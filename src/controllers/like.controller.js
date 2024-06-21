@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { Video } from "../models/video.model.js"
+import { Comment } from "../models/comment.model.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     //TODO: toggle like on video
@@ -46,8 +47,38 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
+
+    const userId = req.user._id;
+
+    if (!userId) {
+        throw new ApiError(400, "Log in to like a comment");
+    }
+
     const { commentId } = req.params
-    //TODO: toggle like on comment
+
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+        throw new ApiError(404, "Comment not found");
+    }
+
+    const like = await Like.findOne({
+        comment: commentId,
+        likedBy: userId
+    });
+
+    if (like) {
+        await Like.findByIdAndDelete(like._id);
+        return res.status(200).json(new ApiResponse(200, [], "Like removed successfully"));
+    }
+
+    const newLike = await Like.create({
+        comment: commentId,
+        likedBy: userId
+    })
+
+    await newLike.save();
+    return res.status(200).json(new ApiResponse(200, newLike, "Like added successfully"));
 
 })
 

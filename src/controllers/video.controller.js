@@ -79,8 +79,15 @@ const publishAVideo = asyncHandler(async (req, res) => {
 })
 
 const getVideoById = asyncHandler(async (req, res) => {
+    // yet to be checked in postman
+
     const { videoId } = req.params
-    //TODO: get video by id
+
+    const video = await Video.findById(videoId);
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+    return res.status(200).json(new ApiResponse(200, video, "Video found successfully"));
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -91,11 +98,52 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: delete video
+
+    if (!mongoose.isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
+
+    // const user = req.user;
+
+    // if (!user) {
+    //     throw new ApiError(400, "You need to be logged in to delete a video");
+    // }
+
+    const video = await Video.findByIdAndDelete(videoId)
+
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    // console.log(video.owner.toString() === user._id.toString());
+
+    if (video.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(400, "You are not authorized to delete this video");
+    }
+
+    return res.status(200).json(new ApiResponse(200, [], "Video deleted successfully"));
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+
+    if (!mongoose.isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
+
+    const video = await Video.findById(videoId);
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    if (video.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(400, "You are not authorized to update this video");
+    }
+
+    video.isPublished = !video.isPublished;
+
+    await video.save();
+    return res.status(200).json(new ApiResponse(200, video, "Video status updated successfully"));
 })
 
 export {

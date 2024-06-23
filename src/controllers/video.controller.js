@@ -42,6 +42,13 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
     if (query || userId) {
         if (userId) {
+            const user = await User.findById(userId);
+            if (!user) {
+                // throw new ApiError(404, "No such user with that user id exists");
+                // return res.status(404).json(new ApiError(404, "No such user with that user id exists"));
+                // return res.status(404).json({ message: "No such user with the user id exists" })
+                throw new ApiError(404, "No such user with that user id exists");
+            }
             pipeline[0].$match.owner = new mongoose.Types.ObjectId(userId)
         }
         myAggregate = Video.aggregate(pipeline);

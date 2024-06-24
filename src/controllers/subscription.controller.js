@@ -40,12 +40,42 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
-    const { channelId } = req.params
+    const { channelId } = req.params;
+    console.log(channelId)
+
+    if (!mongoose.isValidObjectId(channelId)) {
+        throw new ApiError(400, "Invalid channel id");
+    }
+
+    const channelSubscribers = await Subscription.find({
+        channel: channelId
+    });
+
+    if (!channelSubscribers) {
+        throw new ApiError(404, "Error finding subscribers");
+    }
+
+    return res.status(200).json(new ApiResponse(200, channelSubscribers, "Subscribers found successfully"));
 })
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-    const { subscriberId } = req.params
+    const { subscriberId } = req.params;
+
+    if (!mongoose.isValidObjectId(subscriberId)) {
+        throw new ApiError(400, "Invalid subscriber id");
+    }
+
+    const subscribedChannels = await Subscription.find({
+        subscriber: subscriberId
+    })
+    // .select("channel subscriber");
+
+    if (!subscribedChannels) {
+        throw new ApiError(404, "Error finding subscribed channels");
+    }
+
+    return res.status(200).json(new ApiResponse(200, subscribedChannels, "Subscribed channels found successfully"));
 })
 
 export {

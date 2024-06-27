@@ -61,7 +61,6 @@ const getChannelVideos = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(500, error.message);
     }
-
 })
 
 export {

@@ -1,0 +1,9 @@
+.mainDiv {
+    padding: 20px;
+}
+
+.innerDiv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}

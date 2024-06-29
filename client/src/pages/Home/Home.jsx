@@ -9,24 +9,60 @@ import styles from "./Home.module.css";
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useIntersection } from '@mantine/hooks'
 import { Text, Paper, Box, MantineProvider } from '@mantine/core';
+import { ColorRing } from 'react-loader-spinner';
+import axios from 'axios'
+
+// const posts = [];
+
+// for (let i = 0; i < 100; i++) {
+//     posts.push({
+//         id: i + 1,
+//         title: `Post ${i + 1}`,
+//         // description: `This is post ${i + 1}`,
+//         image: "/eg/cover.jpg"
+//     })
+// }
+
 
 
 export default function Home() {
 
-    let posts = [];
+    const [posts, setPosts] = useState([]);
+    const [isPostsFetched, setIsPostsFetched] = useState(false);
 
-    for (let i = 0; i < 100; i++) {
-        posts.push({
-            id: i + 1,
-            title: `Post ${i + 1}`,
-            // description: `This is post ${i + 1}`,
-            image: "/eg/cover.jpg"
-        })
-    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await axios.get("/api/videos/?page=1&limit=3")
+                if (res.data.statusCode >= 400 || res.data.success === false) {
+                    console.log(res.data.message);
+                    return;
+                }
+                setPosts(res.data.data.docs);
+                setIsPostsFetched(true);
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchData();
+    }, [])
 
     const fetchPost = async (page) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return posts.slice((page - 1) * 20, page * 20);
+        // console.log(page)
+        const res = await axios.get(`/api/videos/?page=${page}&limit=3`);
+        // console.log(res.data.data.docs)
+        // if (res.data.data.docs[0] !== undefined) {
+        //     setPosts([...posts, res.data.data.docs[0]]);
+        // }
+        // return res.data.data.docs;
+        // console.log(posts.slice((page - 1) * 10, page * 10))
+        // if (res.data.data.docs.length > 0) {
+        //     setPosts([...posts, ...res.data.data.docs]);
+        // }
+        // return posts.slice((page - 1) * 10, page * 10);
+        // return posts;
+        setIsPostsFetched(true);
+        return res.data.data.docs;
     }
 
     const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -37,11 +73,14 @@ export default function Home() {
         },
         getNextPageParam: (_, pages) => {
             return pages.length + 1;
+            // return pages.length * 10 < posts.length ? pages.length + 1 : undefined;
         },
-        initialData: {
-            pages: [posts.slice(0, 20)],
+        enabled: isPostsFetched,
+        initialData: isPostsFetched ? {
+            // pages: [posts.slice(0, 20)],
+            pages: [],
             pageParams: [1],
-        }
+        } : undefined
     });
 
     const lastPostRef = useRef(null);
@@ -49,9 +88,9 @@ export default function Home() {
         root: lastPostRef.current,
         threshold: 1,
     });
+    // console.log(data)
 
     useEffect(() => {
-        console.log(entry?.isIntersecting)
         if (entry?.isIntersecting) {
             fetchNextPage();
         }
@@ -68,11 +107,11 @@ export default function Home() {
                             //     return <div key={post.id} ref={ref}>{post.title}</div>
                             // }
                             return (
-                                <div key={post.id} ref={ref}>
-                                    <Card sx={{ maxWidth: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post.id}>
+                                <div key={post._id} ref={ref}>
+                                    <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post.id}>
                                         <CardMedia
                                             sx={{ height: 260, borderRadius: "16px" }}
-                                            image="/eg/cover.jpg"
+                                            image={post.thumbnail}
                                             title="green iguana"
                                         />
                                         <CardContent>
@@ -80,8 +119,7 @@ export default function Home() {
                                                 {post.title}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary" sx={{ color: "white" }}>
-                                                Lizards are a widespread group of squamate reptiles, with over 6,000
-                                                species, ranging across all continents except Antarctica
+                                                {post.description}
                                             </Typography>
                                         </CardContent>
                                     </Card>
@@ -90,37 +128,28 @@ export default function Home() {
                         })}
                     </div>
 
-                    <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-                        {isFetchingNextPage
+                    <div className={styles.loadingDiv}>
+                        {/* {isFetchingNextPage
                             ? "Loding more.."
                             : (data?.pages.length ?? 0) < 3
                                 ? "Load more"
                                 : "Nothing to load"
-                        }
-                    </button>
+                        } */}
+
+                        {(isFetchingNextPage || !isPostsFetched) && (
+                            <ColorRing
+                                visible={true}
+                                height="80"
+                                width="80"
+                                ariaLabel="color-ring-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="color-ring-wrapper"
+                                colors={["#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9"]}
+                            />
+                        )}
+                    </div>
                 </div>
             </MantineProvider>
         </>
-        // <MantineProvider>
-
-        //     <Paper ref={containerRef} h={300} style={{ overflowY: 'scroll' }}>
-        //         <Box pt={260} pb={280}>
-        //             <Paper
-        //                 ref={ref}
-        //                 p="xl"
-        //                 style={{
-        //                     backgroundColor: entry?.isIntersecting
-        //                         ? 'var(--mantine-color-teal-7)'
-        //                         : 'var(--mantine-color-red-7)',
-        //                     minWidth: '50%',
-        //                 }}
-        //             >
-        //                 <Text c="#fff" fw={700}>
-        //                     {entry?.isIntersecting ? 'Fully visible' : 'Obscured'}
-        //                 </Text>
-        //             </Paper>
-        //         </Box>
-        //     </Paper>
-        // </MantineProvider>
     )
 }

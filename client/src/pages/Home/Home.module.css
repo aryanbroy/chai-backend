@@ -7,3 +7,7 @@
     flex-wrap: wrap;
     gap: 2rem;
 }
+
+.loadingDiv {
+    text-align: center;
+}

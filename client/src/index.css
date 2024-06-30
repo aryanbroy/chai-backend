@@ -9,3 +9,7 @@ body {
     background-color: #343434;
     color: white;
 }
+
+a {
+    text-decoration: none;
+}

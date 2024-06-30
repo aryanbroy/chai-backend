@@ -33,7 +33,7 @@ export default function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get("/api/videos/?page=1&limit=3")
+                const res = await axios.get("/api/videos/?page=1&limit=20")
                 if (res.data.statusCode >= 400 || res.data.success === false) {
                     console.log(res.data.message);
                     return;
@@ -49,7 +49,7 @@ export default function Home() {
 
     const fetchPost = async (page) => {
         // console.log(page)
-        const res = await axios.get(`/api/videos/?page=${page}&limit=3`);
+        const res = await axios.get(`/api/videos/?page=${page}&limit=20`);
         // console.log(res.data.data.docs)
         // if (res.data.data.docs[0] !== undefined) {
         //     setPosts([...posts, res.data.data.docs[0]]);
@@ -110,7 +110,7 @@ export default function Home() {
                                 <div key={post._id} ref={ref}>
                                     <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post.id}>
                                         <CardMedia
-                                            sx={{ height: 260, borderRadius: "16px" }}
+                                            sx={{ height: 230, borderRadius: "16px" }}
                                             image={post.thumbnail}
                                             title="green iguana"
                                         />

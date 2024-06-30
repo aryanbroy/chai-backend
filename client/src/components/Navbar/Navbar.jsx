@@ -4,6 +4,7 @@ import { RiVideoUploadFill } from "react-icons/ri";
 import { IoNotifications } from "react-icons/io5";
 import { Button, TextField } from '@mui/material'
 import { FaSearch } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 
 export default function Navbar() {
@@ -11,7 +12,9 @@ export default function Navbar() {
         <div className={styles.navMainDiv}>
             <div className={styles.navInnerDiv}>
                 <div>
-                    <h1 className={styles.heading}>Youtube</h1>
+                    <Link to={"/"}>
+                        <h1 className={styles.heading}>Youtube</h1>
+                    </Link>
                 </div>
                 <div>
                     <TextField id="outlined-basic" label="Search" variant="outlined" size='small'
@@ -30,7 +33,13 @@ export default function Navbar() {
                 <div className={styles.rightSideNav}>
                     <p><RiVideoUploadFill size={30} /></p>
                     <p><IoNotifications size={30} /></p>
-                    <Button variant="contained" sx={{ width: "100px", height: "40px", fontSize: "15px", fontWeight: "700" }}>Login</Button>
+                    <Link to={"/login"} style={{ color: "white" }}>
+                        <Button variant="contained" sx={{ width: "100px", height: "40px", fontSize: "15px", fontWeight: "700" }}>
+
+                            Login
+
+                        </Button>
+                    </Link>
                 </div>
             </div>
         </div>

@@ -10,7 +10,8 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useIntersection } from '@mantine/hooks'
 import { Text, Paper, Box, MantineProvider } from '@mantine/core';
 import { ColorRing } from 'react-loader-spinner';
-import axios from 'axios'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
 // const posts = [];
 
@@ -29,6 +30,7 @@ export default function Home() {
 
     const [posts, setPosts] = useState([]);
     const [isPostsFetched, setIsPostsFetched] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -103,6 +105,10 @@ export default function Home() {
     }, [entry])
 
     const _posts = data?.pages.flatMap((page) => page);
+
+    const handleVideoClick = (post) => {
+        navigate(`/watch/${post?._id}`);
+    }
     return (
         <>
             <MantineProvider>
@@ -113,7 +119,7 @@ export default function Home() {
                             //     return <div key={post.id} ref={ref}>{post.title}</div>
                             // }
                             return (
-                                <div key={post?._id} ref={ref}>
+                                <div key={post?._id} ref={ref} onClick={() => handleVideoClick(post)}>
                                     <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post?.id}>
                                         <CardMedia
                                             sx={{ height: 230, borderRadius: "16px" }}

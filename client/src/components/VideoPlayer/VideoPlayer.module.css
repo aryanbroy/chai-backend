@@ -1,0 +1,32 @@
+.mainDiv {
+    padding: 20px 30px;
+}
+
+.videoTitle {
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 1.8em;
+}
+
+.avatarDiv {
+    margin-top: 0.5rem;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.channelDiv {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid gray;
+}
+
+.channelName {
+    margin: 0;
+    font-size: 1.2em;
+}

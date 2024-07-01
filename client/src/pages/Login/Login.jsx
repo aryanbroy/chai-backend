@@ -60,7 +60,8 @@ export default function Login() {
                         {error && <p className='text-danger'>{error}</p>}
 
                         <div className="d-flex justify-content-between mx-3 mb-4">
-                            <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
+                            {/* <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' /> */}
+                            <div></div>
                             <a href="!#">Forgot password?</a>
                         </div>
 

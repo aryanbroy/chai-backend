@@ -42,6 +42,7 @@ export default function Home() {
                 setIsPostsFetched(true);
             } catch (error) {
                 console.log(error)
+                setIsPostsFetched(true);
             }
         }
         fetchData();
@@ -49,20 +50,25 @@ export default function Home() {
 
     const fetchPost = async (page) => {
         // console.log(page)
-        const res = await axios.get(`/api/videos/?page=${page}&limit=20`);
-        // console.log(res.data.data.docs)
-        // if (res.data.data.docs[0] !== undefined) {
-        //     setPosts([...posts, res.data.data.docs[0]]);
-        // }
-        // return res.data.data.docs;
-        // console.log(posts.slice((page - 1) * 10, page * 10))
-        // if (res.data.data.docs.length > 0) {
-        //     setPosts([...posts, ...res.data.data.docs]);
-        // }
-        // return posts.slice((page - 1) * 10, page * 10);
-        // return posts;
-        setIsPostsFetched(true);
-        return res.data.data.docs;
+        try {
+            const res = await axios.get(`/api/videos/?page=${page}&limit=20`);
+            // console.log(res.data.data.docs)
+            // if (res.data.data.docs[0] !== undefined) {
+            //     setPosts([...posts, res.data.data.docs[0]]);
+            // }
+            // return res.data.data.docs;
+            // console.log(posts.slice((page - 1) * 10, page * 10))
+            // if (res.data.data.docs.length > 0) {
+            //     setPosts([...posts, ...res.data.data.docs]);
+            // }
+            // return posts.slice((page - 1) * 10, page * 10);
+            // return posts;
+            setIsPostsFetched(true);
+            return res.data.data.docs;
+        } catch (error) {
+            console.log(error)
+            setIsPostsFetched(true)
+        }
     }
 
     const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -107,19 +113,19 @@ export default function Home() {
                             //     return <div key={post.id} ref={ref}>{post.title}</div>
                             // }
                             return (
-                                <div key={post._id} ref={ref}>
-                                    <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post.id}>
+                                <div key={post?._id} ref={ref}>
+                                    <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post?.id}>
                                         <CardMedia
                                             sx={{ height: 230, borderRadius: "16px" }}
-                                            image={post.thumbnail}
+                                            image={post?.thumbnail}
                                             title="green iguana"
                                         />
                                         <CardContent>
                                             <Typography gutterBottom variant="h5" component="div" sx={{ color: "white" }}>
-                                                {post.title}
+                                                {post?.title}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary" sx={{ color: "white" }}>
-                                                {post.description}
+                                                {post?.description}
                                             </Typography>
                                         </CardContent>
                                     </Card>

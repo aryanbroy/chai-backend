@@ -9,17 +9,19 @@ import {
 import styles from "./Login.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
 import { ColorRing } from 'react-loader-spinner';
+import { signInFailure, signInStart, signInSuccess } from '../../redux/user/userSlice.js';
 
 export default function Login() {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { loading, error } = useSelector((state) => state.user);
     const [contents, setContents] = useState({}); // we get email and pass here
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [userData, setUserData] = useState({});
-    // console.log(userData)
+
     // console.log(error)
+    // console.log(userData)
 
     const handleChange = (e) => {
         setContents({ ...contents, [e.target.name]: e.target.value });
@@ -28,25 +30,20 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            setLoading(true)
-            setError(null);
+            dispatch(signInStart())
             const res = await axios.post(`/api/users/login`, contents, { withCredentials: true });
 
 
             if (res?.response?.data.statusCode >= 400 || res?.response?.data.success === false) {
-                setLoading(false);
-                setError(error.response);
+                dispatch(signInFailure(res?.response?.data.message));
                 return;
             }
-            const data = res.data.data.user;
-            // console.log(data);
-            setUserData(data)
-            setLoading(false)
+            const data = await res.data.data.user;
+            // console.log(data)
+            dispatch(signInSuccess(data));
             navigate("/");
         } catch (error) {
-            // console.log(error)
-            setLoading(false)
-            setError(error.response?.data.message);
+            dispatch(signInFailure(error.response?.data.message))
         }
     }
 

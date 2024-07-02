@@ -1,5 +1,8 @@
 .mainDiv {
     padding: 20px 30px;
+    display: flex;
+    gap: 3rem;
+    height: fit-content;
 }
 
 .videoTitle {
@@ -29,4 +32,25 @@
 .channelName {
     margin: 0;
     font-size: 1.2em;
+}
+
+.leftDiv {
+    width: 70vw;
+}
+
+.descriptionDiv {
+    margin-top: 0.4rem;
+    background-color: rgba(219, 219, 219, 0.1);
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.viewsPara {
+    font-weight: 700;
+}
+
+.viewsDiv {
+    display: flex;
+    gap: 0.6rem;
+    height: 30px;
 }

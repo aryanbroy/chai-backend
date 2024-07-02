@@ -204,6 +204,37 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
     await video.save();
     return res.status(200).json(new ApiResponse(200, video, "Video status updated successfully"));
+});
+
+export const getAllVideoExceptOne = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!mongoose.isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
+
+    // const videos = await Video.find({ _id: { $ne: videoId } }).limit(10);
+    const videos = await Video.aggregate([
+        {
+            $match: {
+                _id: {
+                    $ne: new mongoose.Types.ObjectId(videoId)
+                }
+            }
+        },
+        {
+            $sample: { size: 1 }
+        }
+    ])
+
+    const allVideos = await Video.countDocuments();
+
+    if (videos.length === allVideos) {
+        throw new ApiError(404, "No video exists with that id");
+    }
+
+    return res.status(200).json(new ApiResponse(200, videos, "Videos found successfully"));
+
 })
 
 export {

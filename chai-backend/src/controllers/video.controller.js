@@ -223,7 +223,7 @@ export const getAllVideoExceptOne = asyncHandler(async (req, res) => {
             }
         },
         {
-            $sample: { size: 1 }
+            $sample: { size: 10 }
         }
     ])
 

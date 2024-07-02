@@ -8,7 +8,8 @@ import { formatDistanceToNow } from 'date-fns';
 export default function VideoPlayer() {
     const { videoId } = useParams();
     const [videoDetails, setVideoDetails] = useState("");
-    let time = ""
+    const [suggestedVideos, setSuggestedVideos] = useState(null);
+    console.log(suggestedVideos)
     useEffect(() => {
         const fetchVideo = async () => {
             try {
@@ -24,6 +25,20 @@ export default function VideoPlayer() {
         }
         fetchVideo();
     }, [videoId]);
+
+    useEffect(() => {
+        const fetchSuggestedVideos = async () => {
+            try {
+                const res = await axios.get(`/api/videos/sideVideos/${videoId}`);
+                const data = res.data
+                // console.log(data)
+                setSuggestedVideos(data.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchSuggestedVideos()
+    }, [videoId])
 
     return (
         <div className={styles.mainDiv}>

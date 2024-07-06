@@ -12,19 +12,7 @@ import { Text, Paper, Box, MantineProvider } from '@mantine/core';
 import { ColorRing } from 'react-loader-spinner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
-
-// const posts = [];
-
-// for (let i = 0; i < 100; i++) {
-//     posts.push({
-//         id: i + 1,
-//         title: `Post ${i + 1}`,
-//         // description: `This is post ${i + 1}`,
-//         image: "/eg/cover.jpg"
-//     })
-// }
-
-
+import { FaPlay } from "react-icons/fa";
 
 export default function Home() {
 
@@ -106,8 +94,15 @@ export default function Home() {
 
     const _posts = data?.pages.flatMap((page) => page);
 
-    const handleVideoClick = (post) => {
+    const handleVideoClick = async (post) => {
+
         navigate(`/watch/${post?._id}`);
+        try {
+            const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
+            const data = res.data;
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <>
@@ -119,13 +114,22 @@ export default function Home() {
                             //     return <div key={post.id} ref={ref}>{post.title}</div>
                             // }
                             return (
-                                <div key={post?._id} ref={ref} onClick={() => handleVideoClick(post)}>
+                                <div key={post?._id} className={styles.individualVideoDiv} ref={ref} onClick={() => handleVideoClick(post)}>
                                     <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post?.id}>
-                                        <CardMedia
-                                            sx={{ height: 230, borderRadius: "16px" }}
-                                            image={post?.thumbnail}
-                                            title="green iguana"
-                                        />
+                                        <div className={styles.cardMediaWrapper}>
+                                            <CardMedia
+                                                sx={{ height: 230, borderRadius: "16px" }}
+                                                image={post?.thumbnail}
+                                                title={post?.title}
+                                                className={styles.cardMedia}
+                                            />
+                                            <div className={styles.overlay}>
+                                                <div className={styles.playDiv}>
+                                                    <FaPlay size={15} style={{ marginTop: "-2px" }} />
+                                                    <p className={styles.playPara}>Play</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <CardContent>
                                             <Typography gutterBottom variant="h5" component="div" sx={{ color: "white" }}>
                                                 {post?.title}

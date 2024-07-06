@@ -225,7 +225,7 @@ export const getAllVideoExceptOne = asyncHandler(async (req, res) => {
         {
             $sample: { size: 10 }
         }
-    ])
+    ]);
 
     const allVideos = await Video.countDocuments();
 
@@ -233,8 +233,29 @@ export const getAllVideoExceptOne = asyncHandler(async (req, res) => {
         throw new ApiError(404, "No video exists with that id");
     }
 
-    return res.status(200).json(new ApiResponse(200, videos, "Videos found successfully"));
+    const populatedVideos = await Video.populate(videos, { path: "owner", select: "username fullName" });
 
+    return res.status(200).json(new ApiResponse(200, populatedVideos, "Videos found successfully"));
+
+});
+
+export const increaseViews = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!mongoose.isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    video.views += 1;
+
+    await video.save({ validateBeforeSave: false });
+    return res.status(200).json(new ApiResponse(200, video, "Views increased successfully"));
 })
 
 export {

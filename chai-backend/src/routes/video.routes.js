@@ -4,6 +4,7 @@ import {
     getAllVideoExceptOne,
     getAllVideos,
     getVideoById,
+    increaseViews,
     publishAVideo,
     togglePublishStatus,
     updateVideo,
@@ -42,5 +43,6 @@ router
 router.route("/sideVideos/:videoId").get(getAllVideoExceptOne);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+router.route("/increase/view/:videoId").patch(increaseViews);
 
 export default router

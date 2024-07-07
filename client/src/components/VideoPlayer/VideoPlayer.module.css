@@ -177,3 +177,33 @@
 .likeDiv {
     border-right: 1px solid gray;
 }
+
+.commentDiv {
+    margin-top: 1.8rem;
+}
+
+.commentHeading {
+    font-weight: 700;
+}
+
+.commentBoxDiv {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.likeDiv:hover {
+    cursor: pointer;
+}
+
+.commentBox {
+    width: 100%;
+}
+
+.buttonDiv {
+    margin-top: 10px;
+    display: flex;
+    justify-content: end;
+    gap: 8px;
+    margin-right: 2px;
+}

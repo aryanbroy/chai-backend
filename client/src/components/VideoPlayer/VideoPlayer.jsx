@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import ReactPlayer from 'react-player'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +9,8 @@ import { FaPlay } from 'react-icons/fa';
 import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import { IoIosShareAlt } from "react-icons/io";
 import { PiShareFatLight } from "react-icons/pi";
+import { useSelector } from 'react-redux'
+import { Button, TextField } from "@mui/material"
 
 export default function VideoPlayer() {
 
@@ -19,8 +21,23 @@ export default function VideoPlayer() {
     const [videoLikes, setVideoLikes] = useState(0);
     const [loading, setLoading] = useState(false);
     const [likedByUser, setLikedByUser] = useState(false);
+    const { currentUser } = useSelector((state) => state.user);
 
     // console.log(videoDetails)
+
+    const handleLike = async () => {
+        try {
+            setLikedByUser(!likedByUser);
+            if (likedByUser) {
+                setVideoLikes(videoLikes - 1);
+            } else {
+                setVideoLikes(videoLikes + 1);
+            }
+            const res = await axios.post(`/api/likes/toggle/v/${videoId}`, {}, { withCredentials: true });
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const fetchLikedByUser = async () => {
         try {
@@ -135,7 +152,7 @@ export default function VideoPlayer() {
                                 </div>
                                 <div className={styles.likesDislikeAndShareDiv}>
                                     <div className={styles.likeDislikeDiv}>
-                                        <div className={styles.likeDiv}>{likedByUser ? <AiFillLike /> : <AiOutlineLike />} {videoLikes}</div>
+                                        <div className={styles.likeDiv} onClick={handleLike}>{likedByUser ? <AiFillLike /> : <AiOutlineLike />} {videoLikes}</div>
                                         <div className={styles.dislikeDiv}><AiOutlineDislike /></div>
                                     </div>
                                     <div className={styles.shareDiv}><PiShareFatLight /> Share</div>
@@ -149,6 +166,53 @@ export default function VideoPlayer() {
                             </div>
                             <div>
                                 <p>{videoDetails.description}</p>
+                            </div>
+                        </div>
+                        <div className={styles.commentDiv}>
+                            <h2 className={styles.commentHeading}>20 comment(s)</h2>
+                            <div className={styles.commentBoxDiv}>
+                                <img src={currentUser ? currentUser.avatar : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} alt="" className={styles.avatar} />
+                                <div className={styles.commentBox}>
+                                    <TextField placeholder='Add a comment' id="standard-basic" variant="standard" InputLabelProps={{ style: { color: "white" }, shrink: false }}
+                                        sx={{
+                                            width: "100%",
+                                            marginTop: "-5px",
+                                            color: "white",
+                                            '& .MuiInput-underline:before': {
+                                                borderBottomColor: '#A9A9A9',
+                                            },
+                                            '& .MuiInput-underline:hover:before': {
+                                                borderBottomColor: '#A9A9A9',
+                                            },
+                                            '& .MuiInput-underline:after': {
+                                                borderBottomColor: 'white',
+                                            },
+                                            '& .MuiInputBase-input::placeholder': {
+                                                color: 'white',
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                color: 'white',
+                                            },
+                                        }}
+                                    />
+                                    <div className={styles.buttonDiv}>
+                                        <Button variant="text" className={styles.cancelCommentBtn}
+                                            sx={{
+                                                borderRadius: '20px',
+                                                width: '110px',
+                                                color: "white"
+                                            }}
+                                        >Cancel</Button>
+                                        <Button variant='contained' className={styles.postCommentBtn}
+                                            sx={{
+                                                borderRadius: '20px',
+                                                width: '110px',
+                                                height: "40px",
+                                                color: "#332d2d"
+                                            }}
+                                        >Comment</Button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

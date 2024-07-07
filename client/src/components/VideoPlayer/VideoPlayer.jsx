@@ -6,49 +6,77 @@ import styles from "./VideoPlayer.module.css"
 import { formatDistanceToNow } from 'date-fns';
 import { ColorRing } from 'react-loader-spinner';
 import { FaPlay } from 'react-icons/fa';
+import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
+import { IoIosShareAlt } from "react-icons/io";
+import { PiShareFatLight } from "react-icons/pi";
 
 export default function VideoPlayer() {
     const { videoId } = useParams();
-    const [videoDetails, setVideoDetails] = useState("");
+    const [videoDetails, setVideoDetails] = useState({});
     const [suggestedVideos, setSuggestedVideos] = useState(null);
+    const [videoLikes, setVideoLikes] = useState(0);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    useEffect(() => {
-        const fetchVideo = async () => {
-            try {
-                setLoading(true);
-                const res = await axios.get(`/api/videos/${videoId}`, { withCredentials: true });
-                const data = res.data;
-                setVideoDetails(data.data);
-                const date = new Date(data.data.createdAt);
+    // console.log(videoDetails)
+    console.log(videoLikes)
+
+    const fetchSuggestedVideos = async () => {
+        try {
+            const res = await axios.get(`/api/videos/sideVideos/${videoId}`);
+            const data = res.data;
+            data.data.map((video) => {
+                const date = new Date(video.createdAt);
                 const formattedDate = formatDistanceToNow(date, { addSuffix: true });
-                setLoading(false)
-                setVideoDetails({ ...data.data, uploadedTimeAgo: formattedDate })
-            } catch (error) {
-                console.log(error)
-                setLoading(false)
-            }
+                video.uploadedTimeAgo = formattedDate
+            })
+            setSuggestedVideos(data.data)
+        } catch (error) {
+            console.log(error)
         }
-        fetchVideo();
-    }, [videoId]);
+    }
+
+    const fetchVideo = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get(`/api/videos/${videoId}`, { withCredentials: true });
+            const data = res.data;
+            setVideoDetails(data.data);
+            const date = new Date(data.data.createdAt);
+            const formattedDate = formatDistanceToNow(date, { addSuffix: true });
+            setLoading(false)
+            setVideoDetails({ ...data.data, uploadedTimeAgo: formattedDate })
+        } catch (error) {
+            console.log(error)
+            setLoading(false)
+        }
+    }
+
+    const fetchLikesOfVideo = async () => {
+        try {
+            const res = await axios.get(`/api/likes/getLikes/${videoId}`, { withCredentials: true });
+            const data = res.data;
+            // setVideoDetails({ ...videoDetails, likes: data.data });
+            setVideoLikes(data.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     useEffect(() => {
-        const fetchSuggestedVideos = async () => {
+
+        const fetchAllData = async () => {
             try {
-                const res = await axios.get(`/api/videos/sideVideos/${videoId}`);
-                const data = res.data;
-                data.data.map((video) => {
-                    const date = new Date(video.createdAt);
-                    const formattedDate = formatDistanceToNow(date, { addSuffix: true });
-                    video.uploadedTimeAgo = formattedDate
-                })
-                setSuggestedVideos(data.data)
+                await Promise.all([
+                    fetchLikesOfVideo(),
+                    fetchVideo(),
+                    fetchSuggestedVideos(),
+                ])
             } catch (error) {
                 console.log(error)
             }
         }
-        fetchSuggestedVideos()
-    }, [videoId])
+        fetchAllData();
+    }, [videoId]);
 
     const handleSidebarClick = async (video) => {
         navigate(`/watch/${video?._id}`);
@@ -81,12 +109,23 @@ export default function VideoPlayer() {
                             <ReactPlayer url={videoDetails.videoFile} controls width={"100%"} height={"auto"} />
                         </div>
                         <h1 className={styles.videoTitle}>{videoDetails.title}</h1>
-                        <div className={styles.channelDiv}>
-                            <div className={styles.avatarDiv}>
-                                <img src={videoDetails.owner?.avatar} alt="" className={styles.avatar} />
-                            </div>
-                            <div className={styles.channelNameDiv}>
-                                <h4 className={styles.channelName}>{videoDetails.owner?.username}</h4>
+                        <div className={styles.channelMainDiv}>
+                            <div className={styles.channelDiv}>
+                                <div className={styles.avatarAndNameDiv}>
+                                    <div className={styles.avatarDiv}>
+                                        <img src={videoDetails.owner?.avatar} alt="" className={styles.avatar} />
+                                    </div>
+                                    <div className={styles.channelNameDiv}>
+                                        <h4 className={styles.channelName}>{videoDetails.owner?.username}</h4>
+                                    </div>
+                                </div>
+                                <div className={styles.likesDislikeAndShareDiv}>
+                                    <div className={styles.likeDislikeDiv}>
+                                        <div className={styles.likeDiv}><AiOutlineLike /> {videoLikes}</div>
+                                        <div className={styles.dislikeDiv}><AiOutlineDislike /></div>
+                                    </div>
+                                    <div className={styles.shareDiv}><PiShareFatLight /> Share</div>
+                                </div>
                             </div>
                         </div>
                         <div className={styles.descriptionDiv}>

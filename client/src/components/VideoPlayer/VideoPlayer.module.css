@@ -24,6 +24,7 @@
 .channelDiv {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid gray;
@@ -140,4 +141,39 @@
 
 .cardDiv:hover {
     cursor: pointer;
+}
+
+.avatarAndNameDiv {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.likesDislikeAndShareDiv {
+    display: flex;
+    gap: 1rem;
+    align-items: center
+}
+
+.likeDiv,
+.dislikeDiv,
+.shareDiv {
+    font-weight: 500;
+    font-size: 19px;
+}
+
+.likeDislikeDiv {
+    display: flex;
+    align-items: center;
+}
+
+.likeDiv,
+.dislikeDiv {
+    padding: 5px;
+    height: 34px;
+    padding-top: 2px;
+}
+
+.likeDiv {
+    border-right: 1px solid gray;
 }

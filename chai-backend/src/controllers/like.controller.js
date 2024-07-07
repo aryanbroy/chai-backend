@@ -90,6 +90,18 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
+});
+
+export const getLikesOfVideo = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!mongoose.isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
+
+    const likes = await Like.countDocuments({ video: videoId });
+
+    return res.status(200).json(new ApiResponse(200, likes, "Likes found successfully"));
 })
 
 export {

@@ -11,14 +11,27 @@ import { IoIosShareAlt } from "react-icons/io";
 import { PiShareFatLight } from "react-icons/pi";
 
 export default function VideoPlayer() {
+
+    const navigate = useNavigate();
     const { videoId } = useParams();
     const [videoDetails, setVideoDetails] = useState({});
     const [suggestedVideos, setSuggestedVideos] = useState(null);
     const [videoLikes, setVideoLikes] = useState(0);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const [likedByUser, setLikedByUser] = useState(false);
+
     // console.log(videoDetails)
-    console.log(videoLikes)
+
+    const fetchLikedByUser = async () => {
+        try {
+            const res = await axios.get(`/api/likes/videos`, { withCredentials: true });
+            const data = res.data;
+            const liked = data.data.some((video) => video._id === videoId);
+            setLikedByUser(liked);
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const fetchSuggestedVideos = async () => {
         try {
@@ -70,6 +83,7 @@ export default function VideoPlayer() {
                     fetchLikesOfVideo(),
                     fetchVideo(),
                     fetchSuggestedVideos(),
+                    fetchLikedByUser()
                 ])
             } catch (error) {
                 console.log(error)
@@ -121,7 +135,7 @@ export default function VideoPlayer() {
                                 </div>
                                 <div className={styles.likesDislikeAndShareDiv}>
                                     <div className={styles.likeDislikeDiv}>
-                                        <div className={styles.likeDiv}><AiOutlineLike /> {videoLikes}</div>
+                                        <div className={styles.likeDiv}>{likedByUser ? <AiFillLike /> : <AiOutlineLike />} {videoLikes}</div>
                                         <div className={styles.dislikeDiv}><AiOutlineDislike /></div>
                                     </div>
                                     <div className={styles.shareDiv}><PiShareFatLight /> Share</div>

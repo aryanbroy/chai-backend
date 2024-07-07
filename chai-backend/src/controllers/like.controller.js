@@ -88,8 +88,21 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 }
 )
 
+// Not completed
 const getLikedVideos = asyncHandler(async (req, res) => {
-    //TODO: get all liked videos
+    const userId = req.user._id;
+
+    if (!userId) {
+        throw new ApiError(400, "Log in to get liked videos");
+    }
+
+    const likes = await Like.find({ likedBy: userId });
+
+    const videoIds = likes.map(like => like.video);
+
+    const videos = await Video.find({ _id: { $in: videoIds } });
+    return res.status(200).json(new ApiResponse(200, videos, "Videos found successfully"));
+
 });
 
 export const getLikesOfVideo = asyncHandler(async (req, res) => {
@@ -103,6 +116,7 @@ export const getLikesOfVideo = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, likes, "Likes found successfully"));
 })
+
 
 export {
     toggleCommentLike,

@@ -1,18 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import styles from "./Subscription.module.css";
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { useIntersection } from '@mantine/hooks'
-import { Text, Paper, Box, MantineProvider } from '@mantine/core';
-import { ColorRing } from 'react-loader-spinner';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
 import { FaPlay } from "react-icons/fa";
+import { ColorRing } from 'react-loader-spinner';
+import { useNavigate } from 'react-router-dom';
+import styles from "./Subscription.module.css";
 
 export default function Subscription() {
 

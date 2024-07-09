@@ -1,0 +1,45 @@
+.channelAvatar {
+    width: 180px;
+    border-radius: 50%;
+}
+
+.channelDetailsDiv {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.upperDiv {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    width: 85vw;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #a9a9a985;
+}
+
+.channelDetails {
+    width: 1000px;
+}
+
+.channelHeading {
+    font-weight: 900;
+
+}
+
+.channelUsernamePara,
+.channelHeading {
+    padding: 0;
+    margin: 0;
+}
+
+.channelUsernamePara {
+    margin-top: 2px;
+    color: #AAAAAA;
+}
+
+.buttonDiv {
+    margin-top: 8px;
+    display: flex;
+    gap: 0.6rem;
+}

@@ -4,6 +4,7 @@ import { Subscription } from "../models/subscription.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { Video } from "../models/video.model.js"
 
 
 const toggleSubscription = asyncHandler(async (req, res) => {
@@ -76,6 +77,23 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(new ApiResponse(200, subscribedChannels, "Subscribed channels found successfully"));
+})
+
+export const getSubscribedChannelsVideos = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    if (!mongoose.isValidObjectId(userId)) {
+        throw new ApiError(400, "Invalid subscriber id");
+    }
+
+    const subscribedChannels = await Subscription.find({
+        subscriber: userId
+    });
+
+    const channelIds = subscribedChannels.map(sub => sub.channel);
+    const videos = await Video.find({ owner: { $in: channelIds } }).sort({ createdAt: -1 });
+
+    return res.status(200).json(new ApiResponse(200, videos, "Videos found successfully"));
 })
 
 export {

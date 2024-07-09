@@ -1,0 +1,36 @@
+.sidebar {
+    width: 240px;
+    height: 92vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+    margin-left: 14px;
+}
+
+p {
+    margin-bottom: 0;
+    padding: 8px 10px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 500;
+}
+
+.paraDiv {
+    padding: 12px;
+    border-bottom: 1px solid red;
+}
+
+.active {
+    border-radius: 13px;
+    background-color: rgb(63, 62, 62);
+}
+
+#paraId:hover {
+    border-radius: 13px;
+    background-color: rgb(63, 62, 62);
+}

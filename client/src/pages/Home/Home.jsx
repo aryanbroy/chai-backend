@@ -11,8 +11,9 @@ import { useIntersection } from '@mantine/hooks'
 import { Text, Paper, Box, MantineProvider } from '@mantine/core';
 import { ColorRing } from 'react-loader-spinner';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { FaPlay } from "react-icons/fa";
+import Sidebar from '../../components/Sidebar/Sidebar';
 
 export default function Home() {
 

@@ -2,6 +2,10 @@
     padding: 20px;
 }
 
+.homeDiv {
+    display: flex;
+}
+
 .innerDiv {
     display: flex;
     flex-wrap: wrap;

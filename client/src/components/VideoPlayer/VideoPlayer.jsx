@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import ReactPlayer from 'react-player'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +11,17 @@ import { IoIosShareAlt } from "react-icons/io";
 import { PiShareFatLight } from "react-icons/pi";
 import { useSelector } from 'react-redux'
 import { Button, TextField } from "@mui/material"
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useIntersection } from '@mantine/hooks';
+
+const posts = [
+    { id: 1, title: "post 1" },
+    { id: 2, title: "post 2" },
+    { id: 3, title: "post 3" },
+    { id: 4, title: "post 4" },
+    { id: 5, title: "post 5" },
+    { id: 6, title: "post 6" },
+]
 
 export default function VideoPlayer() {
 
@@ -21,17 +32,36 @@ export default function VideoPlayer() {
     const [videoLikes, setVideoLikes] = useState(0);
     const [loading, setLoading] = useState(false);
     const [likedByUser, setLikedByUser] = useState(false);
+    const [commentsFetched, setCommentsFetched] = useState(false);
     const { currentUser } = useSelector((state) => state.user);
+    const [comments, setComments] = useState([]);
 
     // console.log(videoDetails)
 
+    // const fetchComments = async (pageParam) => {
+    //     try {
+    //         // setCommentsFetched(false)
+    //         const res = await axios.get(`/api/comments/${videoId}??page=${pageParam}&limit=3`, { withCredentials: true });
+    //         const data = res.data;
+    //         console.log(data);
+    //         setComments(data.data.docs)
+
+    //         setCommentsFetched(true);
+    //     } catch (error) {
+    //         console.log(error)
+    //         setCommentsFetched(true)
+    //     }
+    // }
+
     const handleLike = async () => {
         try {
-            setLikedByUser(!likedByUser);
-            if (likedByUser) {
-                setVideoLikes(videoLikes - 1);
-            } else {
-                setVideoLikes(videoLikes + 1);
+            if (currentUser) {
+                setLikedByUser(!likedByUser);
+                if (likedByUser) {
+                    setVideoLikes(videoLikes - 1);
+                } else {
+                    setVideoLikes(videoLikes + 1);
+                }
             }
             const res = await axios.post(`/api/likes/toggle/v/${videoId}`, {}, { withCredentials: true });
         } catch (error) {
@@ -93,14 +123,14 @@ export default function VideoPlayer() {
     }
 
     useEffect(() => {
-
         const fetchAllData = async () => {
             try {
                 await Promise.all([
                     fetchLikesOfVideo(),
                     fetchVideo(),
                     fetchSuggestedVideos(),
-                    fetchLikedByUser()
+                    fetchLikedByUser(),
+                    // fetchComments(),
                 ])
             } catch (error) {
                 console.log(error)
@@ -118,6 +148,26 @@ export default function VideoPlayer() {
             console.log(error)
         }
     }
+
+    const fetchPost = async (page) => {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        return posts.slice((page - 1) * 2, page * 2)
+    }
+
+    const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey: ["comments"],
+        queryFn: async ({ pageParam = 1 }) => {
+            const response = await fetchPost(pageParam);
+            return response;
+        },
+        getNextPageParam: (_, pages) => {
+            return pages.length + 1
+        },
+        initialData: {
+            pages: [posts.slice(0, 2)],
+            pageParams: [1],
+        }
+    })
 
     return (
         <div>
@@ -215,6 +265,23 @@ export default function VideoPlayer() {
                                 </div>
                             </div>
                         </div>
+                        {data?.pages.map((page, i) => (
+                            <div key={i}>
+                                {page.map((post) => (
+                                    <div key={post._id}>
+                                        {post.title}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+                            {isFetchingNextPage
+                                ? "Loading more..."
+                                : (data?.pages.length ?? 0) < 3
+                                    ? "Load more"
+                                    : "Nothing more to load"
+                            }
+                        </button>
                     </div>
                     <div>
                         {suggestedVideos?.map((video) => {

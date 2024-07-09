@@ -6,6 +6,8 @@ import Navbar from './components/Navbar/Navbar'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import VideoPlayer from './components/VideoPlayer/VideoPlayer'
+import Main from './pages/Main/Main'
+import Subscription from './pages/Subscription/Subscription'
 
 function App() {
 
@@ -13,7 +15,8 @@ function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Main />} />
+        <Route path='/subscriptions' element={<Main />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/watch/:videoId' element={<VideoPlayer />} />

@@ -11,13 +11,15 @@ import {
     getUserChannelProfile,
     getWatchHistory,
     updateAccountDetails,
-    getUserById
+    getUserById,
+    updateWatchHistory,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const router = Router()
+
 
 router.route("/register").post(
     upload.fields([
@@ -34,7 +36,8 @@ router.route("/register").post(
 )
 
 router.route("/login").post(loginUser)
-router.route("/:userId").get(getUserById);
+
+
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser)
@@ -47,6 +50,11 @@ router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvat
 router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)
 
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile)
-router.route("/history").get(verifyJWT, getWatchHistory)
+router.route("/history").get(verifyJWT, getWatchHistory);
+router.route("/updateHistory").patch(verifyJWT, updateWatchHistory);
+
+router.route("/:userId").get(getUserById);
+
+
 
 export default router

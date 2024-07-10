@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Video } from '../models/video.model.js'
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 
@@ -494,6 +495,34 @@ export const getUserById = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(new ApiResponse(200, user, "User fetched successfully"));
+})
+
+export const updateWatchHistory = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { videoId } = req.body;
+
+    const video = await Video.findById(videoId)
+
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const videoIndex = user.watchHistory.indexOf(videoId);
+    if (videoId !== -1) {
+        user.watchHistory.splice(videoIndex, 1);
+    }
+    user.watchHistory.unshift(videoId);
+    await user.save({ validateBeforeSave: false });
+
+    const updatedUserHistory = await User.findById(userId).select("watchHistory");
+
+    return res.status(200).json(new ApiResponse(200, updatedUserHistory, "Watch history updated successfully"));
 })
 
 

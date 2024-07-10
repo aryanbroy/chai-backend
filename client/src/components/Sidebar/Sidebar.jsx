@@ -22,7 +22,6 @@ export default function Sidebar() {
         // else {
         //     navigate("/")
         // }
-        console.log(e)
         if (e === "home") {
             navigate("/")
             return
@@ -51,7 +50,7 @@ export default function Sidebar() {
                     <>
                         <p id={styles.paraId} className={styles.personalHeading}>You</p>
                         <p id={styles.paraId} onClick={() => handleSidebarClick("yourChannel")}><LuUserSquare2 size={20} /> Your channel</p>
-                        <p id={styles.paraId}><LuHistory size={22} /> History</p>
+                        <p id={styles.paraId} onClick={() => handleSidebarClick("history")}><LuHistory size={22} /> History</p>
                         <p id={styles.paraId}><AiOutlineLike size={22} /> Liked videos</p>
                     </>
                 ) : (

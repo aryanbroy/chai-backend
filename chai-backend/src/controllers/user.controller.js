@@ -428,54 +428,15 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 })
 
 const getWatchHistory = asyncHandler(async (req, res) => {
-    const user = await User.aggregate([
-        {
-            $match: {
-                _id: new mongoose.Types.ObjectId(req.user._id)
-            }
-        },
-        {
-            $lookup: {
-                from: "videos",
-                localField: "watchHistory",
-                foreignField: "_id",
-                as: "watchHistory",
-                pipeline: [
-                    {
-                        $lookup: {
-                            from: "users",
-                            localField: "owner",
-                            foreignField: "_id",
-                            as: "owner",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        fullName: 1,
-                                        username: 1,
-                                        avatar: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $addFields: {
-                            owner: {
-                                $first: "$owner"
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    ])
+
+    const userHistory = await User.findById(req.user._id).populate("watchHistory").select("watchHistory -_id")
 
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                user[0].watchHistory,
+                userHistory,
                 "Watch history fetched successfully"
             )
         )
@@ -514,11 +475,11 @@ export const updateWatchHistory = asyncHandler(async (req, res) => {
     }
 
     const videoIndex = user.watchHistory.indexOf(videoId);
-    if (videoId !== -1) {
+    if (videoIndex !== -1) {
         user.watchHistory.splice(videoIndex, 1);
     }
     user.watchHistory.unshift(videoId);
-    await user.save({ validateBeforeSave: false });
+    await user.save();
 
     const updatedUserHistory = await User.findById(userId).select("watchHistory");
 

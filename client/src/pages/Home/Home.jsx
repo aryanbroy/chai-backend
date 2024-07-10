@@ -95,12 +95,15 @@ export default function Home() {
 
     const _posts = data?.pages.flatMap((page) => page);
 
+    const increaseViews = async (post) => {
+        const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
+    }
+
     const handleVideoClick = async (post) => {
 
         navigate(`/watch/${post?._id}`);
         try {
-            const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
-            const data = res.data;
+            await Promise.all([increaseViews(post)]);
         } catch (error) {
             console.log(error)
         }
@@ -116,8 +119,8 @@ export default function Home() {
                             // }
                             return (
                                 <div key={post?._id} className={styles.individualVideoDiv} ref={ref} onClick={() => handleVideoClick(post)}>
-                                    <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post?.id}>
-                                        <div className={styles.cardMediaWrapper}>
+                                    <Card sx={{ width: 375, backgroundColor: "#343434", boxShadow: "none" }} key={post?._id}>
+                                        <div className={styles.cardMediaWrapper} key={post?._id}>
                                             <CardMedia
                                                 sx={{ height: 230, borderRadius: "16px" }}
                                                 image={post?.thumbnail}

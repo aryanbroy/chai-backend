@@ -6,6 +6,7 @@ import Subscription from '../Subscription/Subscription'
 import Playlist from '../Playlist/Playlist'
 import YourChannel from '../YourChannel/YourChannel'
 import { useLocation, useParams } from 'react-router-dom'
+import History from '../History/History'
 
 export default function Main() {
 
@@ -15,12 +16,15 @@ export default function Main() {
             <div>
                 <Sidebar />
             </div>
-            <div>
-                {location.pathname === "/" && <Home />}
-                {location.pathname === "/subscriptions" && <Subscription />}
-                {location.pathname === "/playlist" && <Playlist />}
-                {location.pathname === `/channel/${channelId}` && <YourChannel />}
-                {location.pathname === "/channel/you" && <YourChannel />}
+            <div style={{ width: "100%" }}>
+                <div className={styles.mainDiv}>
+                    {location.pathname === "/" && <Home />}
+                    {location.pathname === "/subscriptions" && <Subscription />}
+                    {location.pathname === "/playlist" && <Playlist />}
+                    {location.pathname === `/channel/${channelId}` && <YourChannel />}
+                    {location.pathname === "/channel/you" && <YourChannel />}
+                    {location.pathname === "/history" && <History />}
+                </div>
             </div>
         </div>
     )

@@ -1,3 +1,7 @@
 .homeDiv {
     display: flex;
 }
+
+.mainDiv {
+    width: 100%;
+}

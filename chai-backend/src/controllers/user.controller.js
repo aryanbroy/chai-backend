@@ -429,7 +429,15 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
 const getWatchHistory = asyncHandler(async (req, res) => {
 
-    const userHistory = await User.findById(req.user._id).populate("watchHistory").select("watchHistory -_id")
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const userHistory = await User.findById(req.user?._id).populate("watchHistory").select("watchHistory -_id")
 
     return res
         .status(200)

@@ -43,7 +43,7 @@ export default function Sidebar() {
             <div className={styles.paraDiv}>
                 <p id={styles.paraId} className={activePara === "home" ? styles.active : ""} onClick={() => handleSidebarClick("home")}><IoMdHome size={25} style={{ marginBottom: "5px" }} /> Home</p>
                 <p id={styles.paraId} className={activePara === "subscriptions" ? styles.active : ""} onClick={() => handleSidebarClick("subscriptions")}><MdOutlineSubscriptions size={25} />Subscriptions</p>
-                <p id={styles.paraId} className={activePara === "playlist" ? styles.active : ""} onClick={() => handleSidebarClick("playlist")}><MdOutlinePlaylistPlay size={33} style={{ paddingLeft: "2px" }} /> Playlist</p>
+                <p id={styles.paraId} className={activePara === "playlists" ? styles.active : ""} onClick={() => handleSidebarClick("playlists")}><MdOutlinePlaylistPlay size={33} style={{ paddingLeft: "2px" }} /> Playlists</p>
             </div>
             <div className={styles.paraDiv}>
                 {currentUser ? (

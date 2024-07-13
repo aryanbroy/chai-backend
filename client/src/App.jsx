@@ -8,6 +8,7 @@ import Register from './pages/Register/Register'
 import VideoPlayer from './components/VideoPlayer/VideoPlayer'
 import Main from './pages/Main/Main'
 import Subscription from './pages/Subscription/Subscription'
+import Sidebar from './components/Sidebar/Sidebar'
 
 function App() {
 
@@ -21,7 +22,8 @@ function App() {
         <Route path='/channel/:channelId' element={<Main />} />
         <Route path='/channel/you' element={<Main />} />
         <Route path='/history' element={<Main />} />
-        <Route path="/playlist" element={<Main />} />
+        <Route path="/playlists" element={<Main />} />
+        <Route path='/playlist/:playlistId' element={<Main />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/watch/:videoId' element={<VideoPlayer />} />

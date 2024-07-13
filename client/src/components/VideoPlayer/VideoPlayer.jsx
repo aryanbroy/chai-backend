@@ -56,7 +56,6 @@ export default function VideoPlayer() {
     const updateWatchHistory = async () => {
         const res = await axios.patch(`/api/users/updateHistory`, { videoId }, { withCredentials: true });
         const data = res.data;
-        console.log(data)
     }
 
     const handleLike = async () => {

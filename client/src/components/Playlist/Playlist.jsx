@@ -11,6 +11,7 @@ import useFormatDate from '../../hooks/useFormatDate';
 export default function Playlist() {
 
     const [videosData, setVideosData] = useState(null);
+    const [followers, setFollowers] = useState(null);
 
     const { playlistId } = useParams();
     const navigate = useNavigate();
@@ -20,7 +21,6 @@ export default function Playlist() {
         try {
             const res = await axios.get(`/api/playlist/${playlistId}`, { withCredentials: true });
             const data = res.data;
-            console.log(data)
             if (data.success === false) {
                 console.log(data.message);
                 return;
@@ -38,18 +38,33 @@ export default function Playlist() {
         }
     }
 
+    const fetchSubs = async () => {
+        try {
+            const res = await axios.get(`/api/subscriptions/c/${videosData?.owner?._id}`, { withCredentials: true })
+            const data = res.data;
+            setFollowers(data.data.length);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
         fetchPlaylistData();
     }, [])
 
-    const handleClick = (post) => {
-        // console.log(post._id)
+    useEffect(() => {
+        if (videosData) {
+            fetchSubs();
+        }
+    }, [videosData])
+
+    const handleClick = async (post) => {
         navigate(`/watch/${post?._id}`);
-        // try {
-        //     await Promise.all([increaseViews(post)]);
-        // } catch (error) {
-        //     console.log(error)
-        // }
+        try {
+            const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -75,7 +90,7 @@ export default function Playlist() {
                         <img className={styles.ownerImage} src={videosData?.owner?.avatar} alt="" />
                         <div>
                             <p className={styles.ownerPara}>{videosData?.owner?.username}</p>
-                            <p className={styles.ownerPara}>20 followers</p>
+                            <p className={styles.ownerPara}>{followers && `${followers} followers`} </p>
                         </div>
                     </div>
                 </div>

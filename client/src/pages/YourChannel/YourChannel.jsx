@@ -16,6 +16,9 @@ export default function YourChannel() {
     const [isFetching, setIsFetching] = useState(false);
     const [buttonSelected, setButtonSelected] = useState("video");
     const [channelVideos, setChannelVideos] = useState(null);
+    const [subscribers, setSubscribers] = useState(null)
+    const [subscribedTo, setSubscribedTo] = useState(null);
+    // console.log(subscribedTo.subscriber.includes("6671295413c39aa9909faa85"))
 
     const handleButtonClick = (e) => {
         setButtonSelected(e.target.id);
@@ -24,6 +27,28 @@ export default function YourChannel() {
     useEffect(() => {
         setButtonSelected("videos")
     }, [])
+
+    const fetchSubscribers = async () => {
+        try {
+            const res = await axios.get(`/api/subscriptions/c/${channelId}`, { withCredentials: true });
+            const { data } = res.data;
+            console.log(data)
+            setSubscribers(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const fetchSubscribedChannels = async () => {
+        try {
+            const res = await axios.get(`/api/subscriptions/u/${channelId}`, { withCredentials: true });
+            const { data } = res.data;
+            console.log(data)
+            setSubscribedTo(data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const fetchChannelVideos = async () => {
         try {
@@ -71,8 +96,20 @@ export default function YourChannel() {
         if (channelId) {
             fetchChannelDetails();
             fetchChannelVideos();
+            fetchSubscribers();
+            fetchSubscribedChannels();
         }
     }, [channelId])
+
+    const subsPresent = !subscribers || subscribers?.length === 0;
+    const subsToPresent = !subscribedTo || subscribedTo?.length === 0;
+
+    // console.log(subsPresent)
+    // console.log(subsToPresent)
+    // console.log(subsPresent || subsToPresent)
+    // console.log(subsToPresent || subsPresent)
+
+    // console.log((!subscribers || subscribers?.length === 0) && (!subscribedTo || subscribedTo?.length === 0))
 
     return (
         <>
@@ -86,6 +123,11 @@ export default function YourChannel() {
                                 <div className={styles.channelDetails}>
                                     <h1 className={styles.channelHeading}>{channelDetails?.fullName}</h1>
                                     <p className={styles.channelUsernamePara}>@{channelDetails?.username}</p>
+                                    <div className={styles.playlistMeta}>
+                                        <span style={{ color: "rgb(196, 195, 195)" }}>{subscribers && subscribers.length} subscribers</span>
+                                        <span style={{ color: "rgb(196, 195, 195)" }}>•</span>
+                                        <span style={{ color: "rgb(196, 195, 195)" }}>{subscribedTo && subscribedTo.length} subscribed</span>
+                                    </div>
                                     <div className={styles.buttonDiv}>
                                         {isOwner ? (
                                             <>
@@ -177,6 +219,27 @@ export default function YourChannel() {
                                     ))
                                 )}
                             </div>
+                        )}
+                        {buttonSelected === "tweets" && (
+                            <p>Hello tweets</p>
+                        )}
+                        {buttonSelected === "followings" && (
+                            (!subscribers || subscribers?.length === 0) && (!subscribedTo || subscribedTo?.length === 0) ? (
+                                <p>No followers</p>
+                            ) : (
+                                subscribers && subscribers?.map((subscriber, i) => (
+                                    <div className={styles.followingsDiv}>
+                                        <div className={styles.singleFollowing}>
+                                            <div style={{ display: "flex", alignItems: "center" }}>
+                                                <img src={subscriber?.subscriber?.avatar} style={{ width: "40px", borderRadius: "50%" }} />
+                                                <p>{subscriber?.subscriber?.username}</p>
+                                            </div>
+                                            <Button variant='contained' className={styles.subscribed} sx={{ backgroundColor: "white", color: "black" }}>Subscribed</Button>
+
+                                        </div>
+                                    </div>
+                                ))
+                            )
                         )}
                     </>
                 ) : (

@@ -18,7 +18,7 @@ export default function YourChannel() {
     const [channelVideos, setChannelVideos] = useState(null);
     const [subscribers, setSubscribers] = useState(null)
     const [subscribedTo, setSubscribedTo] = useState(null);
-    // console.log(subscribedTo.subscriber.includes("6671295413c39aa9909faa85"))
+    const [subscriptionStatus, setSubscriptionStatus] = useState({});
 
     const handleButtonClick = (e) => {
         setButtonSelected(e.target.id);
@@ -28,11 +28,23 @@ export default function YourChannel() {
         setButtonSelected("videos")
     }, [])
 
+    const isSubscribed = (subscriberId) => {
+        return subscribedTo?.some((sub) => sub.channel === subscriberId)
+    }
+
+    useEffect(() => {
+        const status = {};
+        subscribers?.forEach((subscriber) => {
+            status[subscriber.subscriber._id] = isSubscribed(subscriber.subscriber._id);
+            // console.log(subscriber.subscriber._id)
+        })
+        setSubscriptionStatus(status)
+    }, [subscribers, subscribedTo])
+
     const fetchSubscribers = async () => {
         try {
             const res = await axios.get(`/api/subscriptions/c/${channelId}`, { withCredentials: true });
             const { data } = res.data;
-            console.log(data)
             setSubscribers(data)
         } catch (error) {
             console.log(error)
@@ -43,7 +55,6 @@ export default function YourChannel() {
         try {
             const res = await axios.get(`/api/subscriptions/u/${channelId}`, { withCredentials: true });
             const { data } = res.data;
-            console.log(data)
             setSubscribedTo(data);
         } catch (error) {
             console.log(error)
@@ -101,15 +112,15 @@ export default function YourChannel() {
         }
     }, [channelId])
 
-    const subsPresent = !subscribers || subscribers?.length === 0;
-    const subsToPresent = !subscribedTo || subscribedTo?.length === 0;
-
-    // console.log(subsPresent)
-    // console.log(subsToPresent)
-    // console.log(subsPresent || subsToPresent)
-    // console.log(subsToPresent || subsPresent)
-
-    // console.log((!subscribers || subscribers?.length === 0) && (!subscribedTo || subscribedTo?.length === 0))
+    const handleSubscription = async (channelId) => {
+        setSubscriptionStatus({ ...subscriptionStatus, [channelId]: !subscriptionStatus[channelId] })
+        try {
+            const res = await axios.post(`/api/subscriptions/c/${channelId}`, {}, { withCredentials: true });
+            const { data } = res.data;
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <>
@@ -228,14 +239,14 @@ export default function YourChannel() {
                                 <p>No followers</p>
                             ) : (
                                 subscribers && subscribers?.map((subscriber, i) => (
-                                    <div className={styles.followingsDiv}>
+                                    <div key={i} className={styles.followingsDiv}>
                                         <div className={styles.singleFollowing}>
                                             <div style={{ display: "flex", alignItems: "center" }}>
                                                 <img src={subscriber?.subscriber?.avatar} style={{ width: "40px", borderRadius: "50%" }} />
                                                 <p>{subscriber?.subscriber?.username}</p>
                                             </div>
-                                            <Button variant='contained' className={styles.subscribed} sx={{ backgroundColor: "white", color: "black" }}>Subscribed</Button>
 
+                                            <Button variant='contained' className={subscriptionStatus[subscriber?.subscriber?._id] ? styles.subscribed : ""} onClick={() => handleSubscription(subscriber?.subscriber?._id)}>{subscriptionStatus[subscriber?.subscriber?._id] ? "Subscribed" : "Subscribe"}</Button>
                                         </div>
                                     </div>
                                 ))

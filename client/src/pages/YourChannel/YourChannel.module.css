@@ -134,3 +134,8 @@
     align-items: center;
     padding: 10px;
 }
+
+.subscribed {
+    background-color: white !important;
+    color: black !important;
+}

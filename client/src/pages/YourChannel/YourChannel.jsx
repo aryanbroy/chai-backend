@@ -7,6 +7,7 @@ import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material'
 import { ColorRing } from 'react-loader-spinner';
 import { FaPlay } from 'react-icons/fa';
 import useFormatDate from '../../hooks/useFormatDate';
+import Tweet from '../../components/Tweet/Tweet';
 
 export default function YourChannel() {
     const [isOwner, setIsOwner] = useState(false);
@@ -232,7 +233,7 @@ export default function YourChannel() {
                             </div>
                         )}
                         {buttonSelected === "tweets" && (
-                            <p>Hello tweets</p>
+                            <Tweet />
                         )}
                         {buttonSelected === "followings" && (
                             (!subscribers || subscribers?.length === 0) && (!subscribedTo || subscribedTo?.length === 0) ? (

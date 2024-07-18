@@ -165,6 +165,23 @@ export const getLikedTweets = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, tweetsLiked, "Tweets found successfully"))
 })
 
+export const getLikedTweetsOfChannel = asyncHandler(async (req, res) => {
+
+    // i have the channel id
+    // channelId -> all the tweets he made -> all the liked that has tweet id of the tweet made by owner and likedBy me
+
+    const userId = req.user._id;
+    const { channelId } = req.params;
+
+    const tweets = await Tweet.find({ owner: channelId });
+
+    const tweetIds = tweets.map(tweet => tweet._id);
+
+    const likesByMe = await Like.find({ tweet: { $in: tweetIds }, likedBy: userId });
+
+    return res.status(200).json(new ApiResponse(200, likesByMe, "Tweets found successfully"))
+})
+
 export {
     toggleCommentLike,
     toggleTweetLike,

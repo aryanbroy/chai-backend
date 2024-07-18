@@ -64,7 +64,7 @@ export default function YourChannel() {
 
     const fetchChannelVideos = async () => {
         try {
-            const res = await axios.get(`/api/dashboard/videos`, { withCredentials: true });
+            const res = await axios.get(`/api/dashboard/videos/${channelId}`, { withCredentials: true });
             const { data } = res.data;
             // console.log(res.data);
             if (data.success === false) {
@@ -182,13 +182,15 @@ export default function YourChannel() {
                                         color: "black"
                                     }
                                 }}>Tweets</Button>
-                                <Button variant="text" id='followings' className={buttonSelected === "followings" ? styles.active : ""} onClick={handleButtonClick} sx={{
-                                    fontWeight: 900, width: "250px", color: "#e0dede85", '&:hover': {
-                                        opacity: "0.8",
-                                        backgroundColor: "white",
-                                        color: "black"
-                                    }
-                                }}>Followings</Button>
+                                {currentUser?._id === channelId && (
+                                    <Button variant="text" id='followings' className={buttonSelected === "followings" ? styles.active : ""} onClick={handleButtonClick} sx={{
+                                        fontWeight: 900, width: "250px", color: "#e0dede85", '&:hover': {
+                                            opacity: "0.8",
+                                            backgroundColor: "white",
+                                            color: "black"
+                                        }
+                                    }}>Followings</Button>
+                                )}
                             </div>
                         </div>
                         {buttonSelected === "videos" && (

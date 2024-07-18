@@ -43,7 +43,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
         throw new ApiError(400, "No such user exists")
     }
 
-    const tweets = await Tweet.find({ owner: userId }).populate("owner", "username fullName avatar");
+    const tweets = await Tweet.find({ owner: userId }).populate("owner", "username fullName avatar").sort({ updatedAt: -1 });
 
     return res.status(200).json(new ApiResponse(200, tweets, "Tweets found successfully"))
 

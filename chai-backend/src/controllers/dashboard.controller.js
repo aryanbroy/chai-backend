@@ -45,7 +45,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
 const getChannelVideos = asyncHandler(async (req, res) => {
     try {
-        const channelId = req.user._id;
+        const channelId = req.params.channelId;
 
         if (!mongoose.isValidObjectId(channelId)) {
             throw new ApiError(400, "Invalid channel id");

@@ -26,7 +26,6 @@ export default function Tweet() {
         try {
             const res = await axios.post(`/api/likes/toggle/t/${tweetId}`, {}, { withCredentials: true });
             const { data } = res.data;
-            console.log(data);
         } catch (error) {
             console.log(error);
         }
@@ -116,7 +115,20 @@ export default function Tweet() {
         }
     }
 
+    const handleLike = async (tweetId) => {
 
+        setLikeStatus({ ...likeStatus, [tweetId]: !likeStatus[tweetId] });
+
+        userTweets.map((tweet) => {
+            if (tweet._id === tweetId) {
+                tweet.likes = likeStatus[tweetId] ? tweet.likes - 1 : tweet.likes + 1
+            }
+        })
+
+        await toggleLikes(tweetId);
+
+        // await toggleLikes(tweetId);
+    }
 
     return (
         <>
@@ -187,10 +199,10 @@ export default function Tweet() {
                                 <img src={tweet?.owner.avatar} alt="" style={{ width: '50px', borderRadius: "50%" }} className={styles.img} />
                             </div>
                             <div className={styles.tweetContentDiv}>
-                                <p className={styles.tweetOwner}>{tweet.owner.username}</p>
+                                <p className={styles.tweetOwner}>{tweet?.owner.username}</p>
                                 <p className={styles.tweetContent}>{tweet.content}</p>
                                 <div className={styles.userControlDiv}>
-                                    <p className={styles.tweetLike}>{likeStatus[tweet._id] ? <AiFillLike /> : <AiOutlineLike />}{tweet.likes && tweet.likes}</p>
+                                    <p onClick={() => handleLike(tweet._id)} className={styles.tweetLike}>{likeStatus[tweet._id] ? <AiFillLike /> : <AiOutlineLike />}{tweet.likes && tweet.likes}</p>
                                     <p className={styles.tweetShare}><PiShareFatFill size={18} />Share</p>
                                     {currentUser?._id === channelId && <p className={styles.tweetEdit}><FaEdit />Edit</p>}
 

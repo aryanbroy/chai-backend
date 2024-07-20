@@ -17,15 +17,15 @@ const createTweet = asyncHandler(async (req, res) => {
         throw new ApiError(400, "You must log in to create a tweet");
     }
 
-    const tweet = await Tweet.create({
+    const createTweet = await Tweet.create({
         content,
         owner: userId,
     });
 
-    // const tweet = await Tweet.findById(createTweet._id).populate({
-    //     path: "owner",
-    //     select: "username fullName avatar",
-    // })
+    const tweet = await Tweet.findById(createTweet._id).populate({
+        path: "owner",
+        select: "username fullName avatar",
+    })
 
     return res.status(200).json(new ApiResponse(200, tweet, "Tweet created successfully"))
 })
@@ -75,11 +75,11 @@ const deleteTweet = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid tweet id");
     }
 
-    const tweetOwnerId = await Tweet.findById(tweetId).select("owner");
+    // const tweetOwnerId = await Tweet.findById(tweetId).select("owner");
 
-    if (req.user.id !== tweetOwnerId) {
-        throw new ApiError(400, "You are not authorized to delete this tweet");
-    }
+    // if (req.user.id !== tweetOwnerId) {
+    //     throw new ApiError(400, "You are not authorized to delete this tweet");
+    // }
 
     const deletedTweet = await Tweet.findByIdAndDelete(tweetId);
 

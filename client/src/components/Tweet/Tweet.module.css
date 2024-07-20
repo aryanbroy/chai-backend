@@ -48,14 +48,16 @@
 
 .tweetLike,
 .tweetShare,
-.tweetEdit {
+.tweetEdit,
+.tweetDelete {
     gap: 0.3rem;
     padding: 0;
 }
 
 .tweetLike:hover,
 .tweetShare:hover,
-.tweetEdit:hover {
+.tweetEdit:hover,
+.tweetDelete:hover {
     cursor: pointer;
     opacity: 0.8;
 

@@ -9,6 +9,8 @@ import Textarea from '@mui/joy/Textarea';
 import { Button, TextField } from '@mui/material';
 import { ColorRing } from 'react-loader-spinner';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify'
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const maxLength = 280;
 
@@ -30,9 +32,9 @@ export default function Tweet() {
     const toggleLikes = async (tweetId) => {
         try {
             const res = await axios.post(`/api/likes/toggle/t/${tweetId}`, {}, { withCredentials: true });
-            const { data } = res.data;
         } catch (error) {
             console.log(error);
+            toast.error(error.response?.data?.message || "Error toggling likes")
         }
     }
 
@@ -52,6 +54,8 @@ export default function Tweet() {
     }
 
     useEffect(() => {
+        // if (currentUser) {
+        // }
         const status = {};
         userTweets?.forEach((tweet) => {
             status[tweet._id] = isLikedByMe(tweet._id);
@@ -95,9 +99,11 @@ export default function Tweet() {
             setError(null);
             const res = await axios.post(`/api/tweets/`, { content: tweetInput }, { withCredentials: true });
             const { data } = res.data;
+            // console.log(data)
             setTweeting(false);
             setError(null);
             setTweetInput("");
+            setUserTweets([data, ...userTweets])
         } catch (error) {
             console.log(error.response.data.message)
             setError(error.response.data.message);
@@ -107,8 +113,8 @@ export default function Tweet() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setUserTweets([{ owner: { _id: currentUser._id, avatar: currentUser.avatar, username: currentUser.username }, content: tweetInput }, ...userTweets])
         await createTweet();
+        // setUserTweets([{ owner: { _id: currentUser._id, avatar: currentUser.avatar, username: currentUser.username }, content: tweetInput }, ...userTweets])
     }
 
     const handleInputChange = (e) => {
@@ -122,17 +128,19 @@ export default function Tweet() {
 
     const handleLike = async (tweetId) => {
 
-        setLikeStatus({ ...likeStatus, [tweetId]: !likeStatus[tweetId] });
+        if (currentUser) {
+            setLikeStatus({ ...likeStatus, [tweetId]: !likeStatus[tweetId] });
 
-        userTweets.map((tweet) => {
-            if (tweet._id === tweetId) {
-                tweet.likes = likeStatus[tweetId] ? tweet.likes - 1 : tweet.likes + 1
-            }
-        })
+            userTweets.map((tweet) => {
+                if (tweet._id === tweetId) {
+                    tweet.likes = likeStatus[tweetId] ? tweet.likes - 1 : tweet.likes + 1
+                }
+            })
 
-        await toggleLikes(tweetId);
-
-        // await toggleLikes(tweetId);
+            await toggleLikes(tweetId);
+        } else {
+            toast.error("Please login to like a tweet")
+        }
     }
 
     const handleEditBtnClick = (tweetId, tweetContent) => {
@@ -160,6 +168,17 @@ export default function Tweet() {
             setEditError(error.response?.data?.message || "Error updating tweet")
         } finally {
             setIsEditPosting(false);
+        }
+    }
+
+    const handleDeleteTweet = async (tweetId) => {
+        try {
+            const res = await axios.delete(`/api/tweets/${tweetId}`, { withCredentials: true });
+            const { data } = res.data;
+            setUserTweets(userTweets.filter((tweet) => tweet._id !== tweetId));
+        } catch (error) {
+            // console.log(error.response?.data?.message || "Error deleting tweet")
+            toast.error(error.response?.data?.message || "Error deleting tweet")
         }
     }
 
@@ -307,7 +326,13 @@ export default function Tweet() {
                                 <div className={styles.userControlDiv}>
                                     <p onClick={() => handleLike(tweet._id)} className={styles.tweetLike}>{likeStatus[tweet._id] ? <AiFillLike /> : <AiOutlineLike />}{tweet.likes && tweet.likes}</p>
                                     <p className={styles.tweetShare}><PiShareFatFill size={18} />Share</p>
-                                    {currentUser?._id === channelId && <p className={styles.tweetEdit} onClick={() => handleEditBtnClick(tweet._id, tweet.content)}><FaEdit />Edit</p>}
+                                    {currentUser?._id === channelId && (
+                                        <>
+                                            <p className={styles.tweetEdit} onClick={() => handleEditBtnClick(tweet._id, tweet.content)}><FaEdit />Edit</p>
+                                            <p className={styles.tweetDelete} onClick={() => handleDeleteTweet(tweet._id)} style={{ color: 'red' }}><RiDeleteBin6Line size={18} />Delete</p>
+                                        </>
+                                    )
+                                    }
                                 </div>
                             </div>
                         </div>

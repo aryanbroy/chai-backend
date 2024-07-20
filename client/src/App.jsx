@@ -9,26 +9,31 @@ import VideoPlayer from './components/VideoPlayer/VideoPlayer'
 import Main from './pages/Main/Main'
 import Subscription from './pages/Subscription/Subscription'
 import Sidebar from './components/Sidebar/Sidebar'
+import { ToastContainer } from 'react-toastify'
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
 
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path='/' element={<Main />} />
-        <Route path='/subscriptions' element={<Main />} />
-        <Route path='/playlist' element={<Main />} />
-        <Route path='/channel/:channelId' element={<Main />} />
-        <Route path='/channel/you' element={<Main />} />
-        <Route path='/history' element={<Main />} />
-        <Route path="/playlists" element={<Main />} />
-        <Route path='/playlist/:playlistId' element={<Main />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/watch/:videoId' element={<VideoPlayer />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <ToastContainer theme='dark' position='top-center' />
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path='/' element={<Main />} />
+          <Route path='/subscriptions' element={<Main />} />
+          <Route path='/playlist' element={<Main />} />
+          <Route path='/channel/:channelId' element={<Main />} />
+          <Route path='/channel/you' element={<Main />} />
+          <Route path='/history' element={<Main />} />
+          <Route path="/playlists" element={<Main />} />
+          <Route path='/playlist/:playlistId' element={<Main />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/watch/:videoId' element={<VideoPlayer />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 

@@ -6,7 +6,7 @@ import { FaEdit } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Textarea from '@mui/joy/Textarea';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { ColorRing } from 'react-loader-spinner';
 import { useParams } from 'react-router-dom';
 
@@ -21,6 +21,11 @@ export default function Tweet() {
     const [likeStatus, setLikeStatus] = useState(null);
     const [tweetsLiked, setTweetsLiked] = useState(null);
     const { channelId } = useParams();
+    const [isEditing, setIsEditing] = useState(false);
+    const [tweetBeingEdited, setTweetBeingEdited] = useState(null);
+    const [editValue, setEditValue] = useState(null);
+    const [editError, setEditError] = useState(null);
+    const [isEditPosting, setIsEditPosting] = useState(false);
 
     const toggleLikes = async (tweetId) => {
         try {
@@ -130,6 +135,34 @@ export default function Tweet() {
         // await toggleLikes(tweetId);
     }
 
+    const handleEditBtnClick = (tweetId, tweetContent) => {
+        setEditError(null);
+        setEditValue(tweetContent)
+        setIsEditing(!isEditing);
+        setTweetBeingEdited(tweetId);
+    }
+
+    const handleEditSubmit = async (tweetId, newContent) => {
+        setIsEditPosting(true);
+        setEditError(null);
+        userTweets.map((tweet) => {
+            if (tweet._id === tweetId) {
+                tweet.content = newContent
+            }
+        })
+        try {
+            await axios.patch(`/api/tweets/${tweetId}`, {
+                content: newContent
+            }, { withCredentials: true });
+            setIsEditing(false);
+        } catch (error) {
+            console.log(error)
+            setEditError(error.response?.data?.message || "Error updating tweet")
+        } finally {
+            setIsEditPosting(false);
+        }
+    }
+
     return (
         <>
             <>
@@ -200,12 +233,81 @@ export default function Tweet() {
                             </div>
                             <div className={styles.tweetContentDiv}>
                                 <p className={styles.tweetOwner}>{tweet?.owner.username}</p>
-                                <p className={styles.tweetContent}>{tweet.content}</p>
+                                {isEditing && tweet._id === tweetBeingEdited ? (
+                                    <>
+                                        <TextField
+                                            id="standard-basic"
+                                            variant="standard"
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                            sx={{
+                                                width: "100%",
+                                                background: "transparent",
+                                                '& .MuiInputBase-input': {
+                                                    color: "white",
+                                                },
+                                                '& .MuiInput-underline:before': {
+                                                    borderBottomColor: 'white',
+                                                },
+                                                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                                    borderBottomColor: 'rgba(255,255,255,0.8)'
+                                                },
+                                                '& .MuiInput-underline:after': {
+                                                    borderBottomColor: '#1976d2',
+                                                },
+                                            }}
+                                        />
+                                        <div className={styles.editBtnsDiv} style={{ width: "100%", display: "flex", justifyContent: "end", gap: "0.4rem", marginTop: "10px" }}>
+                                            <Button
+                                                variant='text'
+                                                onClick={() => setIsEditing(false)}
+                                                sx={{
+                                                    color: "white", padding: "0px 15px", borderRadius: "4px",
+                                                    "&.Mui-disabled": {
+                                                        backgroundColor: "rgba(255,255,255,0.1)",
+                                                        color: "rgba(255,255,255,0.8)",
+                                                    },
+                                                    "&:hover": {
+                                                        backgroundColor: "rgba(255,255,255,0.1)",
+                                                    },
+                                                }}
+                                            >Cancel</Button>
+                                            <Button
+                                                variant='contained'
+                                                sx={{
+                                                    borderRadius: "4px",
+                                                    width: "70px",
+                                                    "&.Mui-disabled": {
+                                                        backgroundColor: "rgba(25, 118, 210, 0.8)",
+                                                        color: "rgba(255,255,255,0.8)",
+                                                    },
+                                                }}
+                                                onClick={() => handleEditSubmit(tweet._id, editValue)}
+                                                disabled={!editValue || isEditPosting}
+                                            >
+                                                {isEditPosting ?
+                                                    <ColorRing
+                                                        visible={true}
+                                                        height="25"
+                                                        width="48"
+                                                        ariaLabel="color-ring-loading"
+                                                        wrapperStyle={{}}
+                                                        wrapperClass="color-ring-wrapper"
+                                                        colors={["#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9"]}
+                                                    /> : "Edit"}
+                                            </Button>
+                                        </div>
+                                        {editError && (
+                                            <p style={{ color: "red" }}>{editError}</p>
+                                        )}
+                                    </>
+                                ) : (
+                                    <p className={styles.tweetContent}>{tweet.content}</p>
+                                )}
                                 <div className={styles.userControlDiv}>
                                     <p onClick={() => handleLike(tweet._id)} className={styles.tweetLike}>{likeStatus[tweet._id] ? <AiFillLike /> : <AiOutlineLike />}{tweet.likes && tweet.likes}</p>
                                     <p className={styles.tweetShare}><PiShareFatFill size={18} />Share</p>
-                                    {currentUser?._id === channelId && <p className={styles.tweetEdit}><FaEdit />Edit</p>}
-
+                                    {currentUser?._id === channelId && <p className={styles.tweetEdit} onClick={() => handleEditBtnClick(tweet._id, tweet.content)}><FaEdit />Edit</p>}
                                 </div>
                             </div>
                         </div>

@@ -16,18 +16,24 @@ export default function Navbar() {
             <div className={styles.navInnerDiv}>
                 <div>
                     <Link to={"/"}>
-                        <h1 className={styles.heading}>Youtube</h1>
+                        <h1 className={styles.heading}>Sometube</h1>
                     </Link>
                 </div>
                 <div>
-                    <TextField id="outlined-basic" label="Search" variant="outlined" size='small'
+                    <TextField id="outlined-basic" placeholder='Search' variant="outlined" size='small'
                         InputProps={{ sx: { borderTopLeftRadius: "25px", borderBottomLeftRadius: "25px", border: "1px #848482 solid" } }}
                         className={styles.inputField}
                         sx={{
                             width: "600px",
                             "& .MuiInputLabel-outlined": {
-                                color: "#A9A9A9",
+                                color: "white",
                                 fontWeight: "bold",
+                            },
+                            '& .MuiOutlinedInput-root': {
+                                '& .MuiInputBase-input::placeholder': {
+                                    color: '#A9A9A9',
+                                    opacity: 1,
+                                },
                             },
                         }}
                     />

@@ -3,8 +3,7 @@ import styles from './YourChannel.module.css'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material'
-import { ColorRing } from 'react-loader-spinner';
+import { Button, Card, CardContent, CardMedia, TextField, Typography } from '@mui/material'
 import { FaPlay } from 'react-icons/fa';
 import useFormatDate from '../../hooks/useFormatDate';
 import Tweet from '../../components/Tweet/Tweet';
@@ -14,12 +13,14 @@ export default function YourChannel() {
     const { currentUser } = useSelector((state) => state.user);
     const { channelId } = useParams();
     const [channelDetails, setChannelDetails] = useState(null);
-    const [isFetching, setIsFetching] = useState(false);
+    // const [isFetching, setIsFetching] = useState(false);
     const [buttonSelected, setButtonSelected] = useState("video");
     const [channelVideos, setChannelVideos] = useState(null);
     const [subscribers, setSubscribers] = useState(null)
     const [subscribedTo, setSubscribedTo] = useState(null);
     const [subscriptionStatus, setSubscriptionStatus] = useState({});
+    const [followerSearchValue, setFollowerSearchValue] = useState("");
+    const [filteredValues, setFilteredValues] = useState(null);
 
     const handleButtonClick = (e) => {
         setButtonSelected(e.target.id);
@@ -37,7 +38,6 @@ export default function YourChannel() {
         const status = {};
         subscribers?.forEach((subscriber) => {
             status[subscriber.subscriber._id] = isSubscribed(subscriber.subscriber._id);
-            // console.log(subscriber.subscriber._id)
         })
         setSubscriptionStatus(status)
     }, [subscribers, subscribedTo])
@@ -47,6 +47,7 @@ export default function YourChannel() {
             const res = await axios.get(`/api/subscriptions/c/${channelId}`, { withCredentials: true });
             const { data } = res.data;
             setSubscribers(data)
+            setFilteredValues(data);
         } catch (error) {
             console.log(error)
         }
@@ -90,8 +91,6 @@ export default function YourChannel() {
         }
     }, [channelId, currentUser]);
 
-    // console.log(isOwner)
-
     const fetchChannelDetails = async () => {
         try {
             const res = await axios.get(`/api/users/${channelId}`, { withCredentials: true });
@@ -121,6 +120,11 @@ export default function YourChannel() {
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const handleFollowerSearch = (e) => {
+        setFollowerSearchValue(e.target.value);
+        setFilteredValues(subscribers?.filter((subscriber) => subscriber.subscriber.username.toLowerCase().includes(e.target.value.toLowerCase())))
     }
 
     return (
@@ -238,22 +242,52 @@ export default function YourChannel() {
                             <Tweet />
                         )}
                         {buttonSelected === "followings" && (
-                            (!subscribers || subscribers?.length === 0) && (!subscribedTo || subscribedTo?.length === 0) ? (
-                                <p>No followers</p>
-                            ) : (
-                                subscribers && subscribers?.map((subscriber, i) => (
-                                    <div key={i} className={styles.followingsDiv}>
-                                        <div className={styles.singleFollowing}>
-                                            <div style={{ display: "flex", alignItems: "center" }}>
-                                                <img src={subscriber?.subscriber?.avatar} style={{ width: "40px", borderRadius: "50%" }} />
-                                                <p>{subscriber?.subscriber?.username}</p>
-                                            </div>
+                            <>
+                                {/* <input type="text" name="search" id="" placeholder='Search' value={followerSearchValue} onChange={handleFollowerSearch} /> */}
 
-                                            <Button variant='contained' className={subscriptionStatus[subscriber?.subscriber?._id] ? styles.subscribed : ""} onClick={() => handleSubscription(subscriber?.subscriber?._id)}>{subscriptionStatus[subscriber?.subscriber?._id] ? "Subscribed" : "Subscribe"}</Button>
+
+                                <TextField id="outlined-basic" placeholder='Search' variant="outlined" value={followerSearchValue} onChange={handleFollowerSearch}
+                                    InputProps={{ sx: { border: "1px #848482 solid", padding: "0" } }}
+                                    sx={{
+                                        padding: "0",
+                                        "& .MuiInputLabel-outlined": {
+                                            color: "#A9A9A9",
+                                            fontWeight: "bold",
+                                        },
+                                        '& .MuiOutlinedInput-root': {
+                                            '& .MuiInputBase-input': {
+                                                color: 'white',
+                                            },
+                                            '& .MuiInputBase-input::placeholder': {
+                                                color: '#A9A9A9',
+                                                opacity: 1,
+                                            },
+                                            '& .MuiOutlinedInput-input': {
+                                                padding: "8px",
+                                            },
+                                        },
+                                    }}
+                                />
+
+
+                                {(!subscribers || subscribers?.length === 0) && (!subscribedTo || subscribedTo?.length === 0) ? (
+                                    <p>No followers</p>
+                                ) : (
+                                    filteredValues && filteredValues?.map((subscriber, i) => (
+                                        <div key={i} className={styles.followingsDiv}>
+                                            <div className={styles.singleFollowing}>
+                                                <div style={{ display: "flex", alignItems: "center" }}>
+                                                    <img src={subscriber?.subscriber?.avatar} style={{ width: "40px", borderRadius: "50%" }} />
+                                                    <p>{subscriber?.subscriber?.username}</p>
+                                                </div>
+
+                                                <Button variant='contained' className={subscriptionStatus[subscriber?.subscriber?._id] ? styles.subscribed : ""} onClick={() => handleSubscription(subscriber?.subscriber?._id)}>{subscriptionStatus[subscriber?.subscriber?._id] ? "Subscribed" : "Subscribe"}</Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
-                            )
+                                    ))
+                                )
+                                }
+                            </>
                         )}
                     </>
                 ) : (

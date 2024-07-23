@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom'
 import { FaPlay } from "react-icons/fa";
 import Sidebar from '../../components/Sidebar/Sidebar';
+import useFormatDate from '../../hooks/useFormatDate';
 
 export default function Home() {
 
@@ -29,7 +30,13 @@ export default function Home() {
                     console.log(res.data.message);
                     return;
                 }
-                setPosts(res.data.data.docs);
+                const { data } = res.data;
+                data.docs.map((video) => {
+                    const date = new Date(video.createdAt);
+                    const formattedDate = useFormatDate(date);
+                    video.uploadedTimeAgo = formattedDate;
+                })
+                setPosts(data.docs);
                 setIsPostsFetched(true);
             } catch (error) {
                 console.log(error)
@@ -55,7 +62,13 @@ export default function Home() {
             // return posts.slice((page - 1) * 10, page * 10);
             // return posts;
             setIsPostsFetched(true);
-            return res.data.data.docs;
+            const { data } = res.data;
+            data.docs.map((video) => {
+                const date = new Date(video.createdAt);
+                const formattedDate = useFormatDate(date);
+                video.uploadedTimeAgo = formattedDate;
+            })
+            return data.docs;
         } catch (error) {
             console.log(error)
             setIsPostsFetched(true)
@@ -85,7 +98,6 @@ export default function Home() {
         root: lastPostRef.current,
         threshold: 1,
     });
-    // console.log(data)
 
     useEffect(() => {
         if (entry?.isIntersecting) {
@@ -93,7 +105,9 @@ export default function Home() {
         }
     }, [entry])
 
-    const _posts = data?.pages.flatMap((page) => page);
+    const _posts = data?.pages.flatMap((page) => {
+        return page
+    });
 
     const increaseViews = async (post) => {
         const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
@@ -134,13 +148,29 @@ export default function Home() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div" sx={{ color: "white" }}>
-                                                {post?.title}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ color: "white" }}>
-                                                {post?.description}
-                                            </Typography>
+                                        <CardContent sx={{
+                                            display: "flex",
+                                            gap: "1rem",
+                                            paddingLeft: '0',
+                                            paddingRight: '0',
+                                            paddingTop: "0.5rem",
+                                        }}>
+                                            <div>
+                                                <img src={post?.channelOwner[0].avatar} alt="" style={{ width: "45px", borderRadius: "50%" }} />
+                                            </div>
+                                            <div>
+                                                <Typography component="div" sx={{ color: "white", fontWeight: "900", fontSize: '20px' }}>
+                                                    {post?.title}
+                                                </Typography>
+                                                <Typography component={"div"} variant="body2" color="text.secondary" sx={{ color: "white" }}>
+                                                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                                                        <span style={{ color: "rgb(196, 195, 195)" }}>{post?.views} Views</span>
+                                                        <span style={{ color: "rgb(196, 195, 195)" }}>•</span>
+                                                        <span style={{ color: "rgb(196, 195, 195)" }}>{post?.uploadedTimeAgo}</span>
+                                                    </div>
+                                                </Typography>
+                                                <span style={{ color: "rgb(196, 195, 195)", fontSize: "14px" }}>{post?.channelOwner[0].username}</span>
+                                            </div>
                                         </CardContent>
                                     </Card>
                                 </div>

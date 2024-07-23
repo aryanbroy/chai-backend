@@ -37,6 +37,23 @@ const getAllVideos = asyncHandler(async (req, res) => {
                     }
                 ]
             }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "channelOwner",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 0,
+                            username: 1,
+                            avatar: 1,
+                        }
+                    }
+                ]
+            }
         }
     ]
 
@@ -53,7 +70,25 @@ const getAllVideos = asyncHandler(async (req, res) => {
         }
         myAggregate = Video.aggregate(pipeline);
     } else {
-        myAggregate = Video.aggregate();
+        myAggregate = Video.aggregate([
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "channelOwner",
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 0,
+                                username: 1,
+                                avatar: 1,
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
     }
 
     Video.aggregatePaginate(myAggregate, options, (err, result) => {

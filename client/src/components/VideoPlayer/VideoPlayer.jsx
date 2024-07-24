@@ -180,6 +180,14 @@ export default function VideoPlayer() {
         }
     })
 
+    const handleShare = () => {
+        navigator.clipboard.writeText(window.location.href)
+        // console.log("success")
+        toast.success("Link copied", {
+            theme: "light",
+        })
+    }
+
     return (
         <div>
             {loading ? (
@@ -216,7 +224,7 @@ export default function VideoPlayer() {
                                         <div className={styles.likeDiv} onClick={handleLike}>{likedByUser ? <AiFillLike /> : <AiOutlineLike />} {videoLikes}</div>
                                         <div className={styles.dislikeDiv}><AiOutlineDislike /></div>
                                     </div>
-                                    <div className={styles.shareDiv}><PiShareFatLight /> Share</div>
+                                    <div className={styles.shareDiv} onClick={handleShare}><PiShareFatLight /> Share</div>
                                 </div>
                             </div>
                         </div>

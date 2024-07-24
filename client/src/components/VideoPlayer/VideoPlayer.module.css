@@ -192,7 +192,8 @@
     gap: 1rem;
 }
 
-.likeDiv:hover {
+.likeDiv:hover,
+.shareDiv:hover {
     cursor: pointer;
 }
 

@@ -8,6 +8,8 @@ import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import SmallCard from '../../components/SmallCard/SmallCard';
+import useFormatDate from '../../hooks/useFormatDate';
 
 export default function History() {
 
@@ -15,8 +17,12 @@ export default function History() {
 
     const fetchWatchHistory = async () => {
         const res = await axios.get("/api/users/history", { withCredentials: true });
-        const data = res.data;
-        setHistoryVideos(data.data.watchHistory)
+        const { data } = res.data;
+        data.map((video) => {
+            const createdAt = new Date(video.createdAt);
+            video.uploadedTimeAgo = useFormatDate(createdAt)
+        })
+        setHistoryVideos(data)
     }
 
     useEffect(() => {
@@ -37,31 +43,32 @@ export default function History() {
                 <div className={styles.cardDiv}>
 
                     {historyVideos?.map((video, i) => (
-                        <Card key={i} sx={{ display: 'flex', width: "100%", gap: "1rem", background: "transparent", boxShadow: "none", marginBottom: "1rem" }}>
-                            <CardMedia
-                                component="img"
-                                sx={{ width: 250, height: 130 }}
-                                image={video?.thumbnail}
-                                alt="Live from space album cover"
-                            />
-                            <CardContent sx={{ flex: '1 0 auto', background: "transparent" }}>
-                                <Typography component="div" variant="h5" sx={{ color: "white" }}>
-                                    {video?.title}
-                                </Typography>
-                                <div style={{ display: "flex", gap: "0.8rem" }}>
-                                    <Typography variant="subtitle1" component="p" sx={{ padding: "0", color: "#AAAAAA", fontSize: "14px" }}>
-                                        {video?.owner.username}
-                                    </Typography>
-                                    <Typography variant="subtitle1" component="p" sx={{ padding: "0", color: "#AAAAAA", fontSize: "14px" }}>
-                                        {video?.views} views
-                                    </Typography>
-                                </div>
-                                <Typography variant='subtitle1' component="p" sx={{ padding: "0", color: "#AAAAAA", fontSize: "14px" }}>
-                                    {video?.description}
-                                </Typography>
-                            </CardContent>
+                        // <Card key={i} sx={{ display: 'flex', alignItems: "start", width: "100%", gap: "0rem", background: "transparent", boxShadow: "none", marginBottom: "1rem" }}>
+                        //     <CardMedia
+                        //         component="img"
+                        //         sx={{ width: 250, height: 130 }}
+                        //         image={video?.thumbnail}
+                        //         alt="Live from space album cover"
+                        //     />
+                        //     <CardContent sx={{ flex: '1 0 auto', background: "transparent", paddingTop: "0" }}>
+                        //         <Typography component="div" variant="h5" sx={{ color: "white" }}>
+                        //             {video?.title}
+                        //         </Typography>
+                        //         <div>
+                        //             <Typography variant="subtitle1" component="p" sx={{ padding: "0", color: "#AAAAAA", fontSize: "14px" }}>
+                        //                 {video?.owner.username}
+                        //             </Typography>
+                        //             <Typography variant="subtitle1" component="p" sx={{ padding: "0", color: "#AAAAAA", fontSize: "14px" }}>
+                        //                 {video?.views} views
+                        //             </Typography>
+                        //         </div>
+                        //         <Typography variant='subtitle1' component="p" sx={{ padding: "0", color: "#AAAAAA", fontSize: "14px" }}>
+                        //             {video?.description}
+                        //         </Typography>
+                        //     </CardContent>
 
-                        </Card>
+                        // </Card>
+                        <SmallCard key={i} video={video} />
                     ))}
                 </div>
             </div>

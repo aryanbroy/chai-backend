@@ -120,12 +120,28 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Log in to get liked videos");
     }
 
-    const likes = await Like.find({ likedBy: userId });
+    const liked = await Like.find({
+        video: { $exists: true },
+        likedBy: userId
+    }).populate({
+        path: "video",
+        select: "title thumbnail views createdAt",
+        populate: {
+            path: "owner",
+            select: "username"
+        }
+    }).sort({ createdAt: -1 });
 
-    const videoIds = likes.map(like => like.video);
+    const videos = liked.map(like => ({
+        _id: like.video._id,
+        title: like.video.title,
+        thumbnail: like.video.thumbnail,
+        views: like.video.views,
+        createdAt: like.video.createdAt,
+        username: like.video.owner.username
+    }))
 
-    const videos = await Video.find({ _id: { $in: videoIds } });
-    return res.status(200).json(new ApiResponse(200, videos, "Videos found successfully"));
+    return res.status(200).json(new ApiResponse(200, videos, "Likes found successfully"));
 
 });
 

@@ -28,6 +28,7 @@ function App() {
           <Route path='/history' element={<Main />} />
           <Route path="/playlists" element={<Main />} />
           <Route path='/playlist/:playlistId' element={<Main />} />
+          <Route path='/likedVideos' element={<Main />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/watch/:videoId' element={<VideoPlayer />} />

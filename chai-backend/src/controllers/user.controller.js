@@ -439,14 +439,31 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
-    const userHistory = await User.findById(req.user?._id).populate("watchHistory").select("watchHistory -_id")
+    const userHistory = await User.findById(req.user?._id).populate({
+        path: "watchHistory",
+        // select: "watchHistory -_id"
+        select: "thumbnail title createdAt views owner",
+        populate: {
+            path: "owner",
+            select: "username"
+        }
+    }).select("watchHistory -_id");
+
+    const videos = userHistory.watchHistory.map(video => ({
+        _id: video._id,
+        thumbnail: video.thumbnail,
+        title: video.title,
+        createdAt: video.createdAt,
+        views: video.views,
+        username: video.owner.username
+    }))
 
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                userHistory,
+                videos,
                 "Watch history fetched successfully"
             )
         )

@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux'
 import { Button, TextField } from "@mui/material"
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useIntersection } from '@mantine/hooks';
+import { toast } from 'react-toastify'
 
 const posts = [
     { id: 1, title: "post 1" },
@@ -70,7 +71,11 @@ export default function VideoPlayer() {
             }
             const res = await axios.post(`/api/likes/toggle/v/${videoId}`, {}, { withCredentials: true });
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+            const err = error.response?.data?.message || "Error liking video";
+            const notLoggedIn = error.response?.data?.message === "Unauthorized request";
+            toast.error(notLoggedIn ? "You must be logged in to like this video" : err)
+
         }
     }
 
@@ -81,7 +86,7 @@ export default function VideoPlayer() {
             const liked = data.data.some((video) => video._id === videoId);
             setLikedByUser(liked);
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     }
 
@@ -123,7 +128,7 @@ export default function VideoPlayer() {
             // setVideoDetails({ ...videoDetails, likes: data.data });
             setVideoLikes(data.data)
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     }
 
@@ -139,7 +144,7 @@ export default function VideoPlayer() {
                     // fetchComments(),
                 ])
             } catch (error) {
-                console.log(error)
+                // console.log(error)
             }
         }
         fetchAllData();
@@ -274,7 +279,7 @@ export default function VideoPlayer() {
                         {data?.pages.map((page, i) => (
                             <div key={i}>
                                 {page.map((post) => (
-                                    <div key={post._id}>
+                                    <div key={post.id}>
                                         {post.title}
                                     </div>
                                 ))}

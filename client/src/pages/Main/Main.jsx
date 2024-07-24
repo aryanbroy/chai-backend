@@ -8,6 +8,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import History from '../History/History'
 import Playlists from '../Playlists/Playlists'
 import Playlist from '../../components/Playlist/Playlist'
+import LikedVideos from '../LikedVideos/LikedVideos'
 
 export default function Main() {
 
@@ -26,6 +27,7 @@ export default function Main() {
                     {location.pathname === "/channel/you" && <YourChannel />}
                     {location.pathname === "/history" && <History />}
                     {location.pathname === `/playlist/${playlistId}` && <Playlist />}
+                    {location.pathname === "/likedVideos" && <LikedVideos />}
                 </div>
             </div>
         </div>

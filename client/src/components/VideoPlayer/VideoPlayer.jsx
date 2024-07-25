@@ -5,7 +5,7 @@ import axios from 'axios';
 import styles from "./VideoPlayer.module.css"
 import { formatDistanceToNow } from 'date-fns';
 import { ColorRing } from 'react-loader-spinner';
-import { FaPlay } from 'react-icons/fa';
+import { FaPlay, FaRegSave } from 'react-icons/fa';
 import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import { IoIosShareAlt } from "react-icons/io";
 import { PiShareFatLight } from "react-icons/pi";
@@ -14,6 +14,8 @@ import { Button, TextField } from "@mui/material"
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useIntersection } from '@mantine/hooks';
 import { toast } from 'react-toastify'
+import SimpleDialog from './SimpleDialog';
+
 
 const posts = [
     { id: 1, title: "post 1" },
@@ -36,6 +38,8 @@ export default function VideoPlayer() {
     const [commentsFetched, setCommentsFetched] = useState(false);
     const { currentUser } = useSelector((state) => state.user);
     const [comments, setComments] = useState([]);
+    const [open, setOpen] = useState(false)
+    const [playlists, setPlaylists] = useState(null);
 
     // console.log(videoDetails)
 
@@ -142,6 +146,7 @@ export default function VideoPlayer() {
                     fetchSuggestedVideos(),
                     fetchLikedByUser(),
                     // fetchComments(),
+                    fetchPlaylists()
                 ])
             } catch (error) {
                 // console.log(error)
@@ -183,9 +188,36 @@ export default function VideoPlayer() {
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href)
         // console.log("success")
-        toast.success("Link copied", {
+        toast.success("Link copied to clipboard", {
             theme: "light",
         })
+    }
+
+    const handleSaveBtnClick = () => {
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const fetchPlaylists = async () => {
+        try {
+            const res = await axios.get(`/api/playlist/user/${currentUser?._id}`, { withCredentials: true });
+            const { data } = res.data;
+            // console.log(data);
+            data.map((playlist) => {
+                if (playlist.videos.some((video) => video._id === videoId)) {
+                    playlist.videoAdded = true;
+                }
+                else {
+                    playlist.videoAdded = false;
+                }
+            })
+            setPlaylists(data);
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -225,6 +257,8 @@ export default function VideoPlayer() {
                                         <div className={styles.dislikeDiv}><AiOutlineDislike /></div>
                                     </div>
                                     <div className={styles.shareDiv} onClick={handleShare}><PiShareFatLight /> Share</div>
+                                    <div className={styles.saveDiv} onClick={handleSaveBtnClick}><FaRegSave /> Save</div>
+                                    <SimpleDialog open={open} onClose={handleClose} playlists={playlists} setPlaylists={setPlaylists} videoId={videoId} />
                                 </div>
                             </div>
                         </div>

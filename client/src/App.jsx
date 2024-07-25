@@ -16,7 +16,7 @@ function App() {
 
   return (
     <>
-      <ToastContainer theme='dark' position='top-center' />
+      <ToastContainer theme='dark' position='top-center' autoClose={3000} stacked draggable />
       <BrowserRouter>
         <Navbar />
         <Routes>

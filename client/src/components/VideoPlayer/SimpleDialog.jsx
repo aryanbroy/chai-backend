@@ -18,14 +18,14 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
 
     const [checkedValues, setCheckedValues] = useState([]);
     const [isFormActive, setIsFormActive] = useState(false);
-    const [playlistValues, setPlaylistValues] = useState(null);
+    const [playlistValues, setPlaylistValues] = useState({ name: "", description: "" });
     const { currentUser } = useSelector((state) => state.user);
     // console.log(checkedValues)
     // console.log(playlists)
 
     useEffect(() => {
         playlists?.map((playlist) => {
-            if (playlist.videoAdded === true) {
+            if (playlist.videoAdded) {
                 if (!checkedValues.includes(playlist._id)) {
                     setCheckedValues([...checkedValues, playlist._id])
                 }
@@ -36,18 +36,20 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
     const handleClose = () => {
         onClose();
         setIsFormActive(false)
-        setPlaylistValues(null)
+        setPlaylistValues({})
     }
 
     const removeVideoFromPlaylist = async (value) => {
         const res = await axios.patch(`/api/playlist/remove/${videoId}/${value}`, {}, { withCredentials: true });
-        const data = res.data;
+        const { data } = res.data;
+        toast.success(`Video removed from ${data.name}`)
         return data;
     }
 
     const addVideoToPlaylist = async (value) => {
         const res = await axios.patch(`/api/playlist/add/${videoId}/${value}`, {}, { withCredentials: true });
-        const data = res.data;
+        const { data } = res.data;
+        toast.success(`Video added to ${data.name} `)
         return data;
     }
 
@@ -56,6 +58,7 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
         const { value } = e.target;
 
         if (value !== undefined) {
+
             // remove from playlist
             if (checkedValues.includes(value)) {
                 setCheckedValues(checkedValues.filter(item => item !== value));
@@ -63,8 +66,10 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
                     const data = await removeVideoFromPlaylist(value);
                 } catch (error) {
                     console.log(error)
+                    toast.error(error.response?.data?.message || "Error removing video from playlist")
                 }
             }
+
             // add to playlist
             else {
                 setCheckedValues([...checkedValues, value]);
@@ -72,11 +77,11 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
                     const data = await addVideoToPlaylist(value)
                 } catch (error) {
                     console.log(error)
+                    toast.error(error.response?.data?.message || "Error adding video to playlist")
                 }
             }
         }
     }
-
 
     const createPlaylist = async (name, description) => {
         const res = await axios.post('/api/playlist/',
@@ -91,6 +96,7 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
         return data;
     }
 
+    // create and video to newly created playlist
     const handleCreateNewPlaylist = async () => {
         if (!playlistValues) {
             toast.warning("Playlist name and description cannot be empty")
@@ -106,19 +112,23 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
         }
         try {
             const { name, description } = playlistValues
+
             const data = await createPlaylist(name, description)
             onClose()
-            console.log(data)
             playlists.push(data);
-            setPlaylistValues(null)
+            setCheckedValues([...checkedValues, data._id]);
+
+            await addVideoToPlaylist(data?._id)
+            // console.log(data)
+
+            setPlaylistValues({})
+            setIsFormActive(false)
         } catch (error) {
             console.log(error)
+            toast.error(error.response?.data?.message || "Error creating playlist, please refresh the page and try again")
         }
     }
 
-    // const checkBoxCheck = () => {
-
-    // }
     return (
         <ThemeProvider theme={darkTheme}>
             <Dialog open={open} onClose={handleClose}

@@ -265,7 +265,7 @@ export default function VideoPlayer() {
                         <div className={styles.descriptionDiv}>
                             <div className={styles.viewsDiv}>
                                 <p className={styles.viewsPara}>{videoDetails?.views} views</p>
-                                <p>{videoDetails?.uploadedTimeAgo}</p>
+                                <p className={styles.timePara}>{videoDetails?.uploadedTimeAgo}</p>
                             </div>
                             <div>
                                 <p>{videoDetails.description}</p>

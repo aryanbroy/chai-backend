@@ -2,6 +2,8 @@
     display: flex;
     gap: 2rem;
     padding: 1rem;
+    height: 100%;
+    flex-wrap: wrap;
 }
 
 .leftDiv {
@@ -16,6 +18,7 @@
 .playlistCard {
     position: relative;
     width: 350px;
+    height: 250px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

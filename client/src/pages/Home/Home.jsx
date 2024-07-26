@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { FaPlay } from "react-icons/fa";
 import Sidebar from '../../components/Sidebar/Sidebar';
 import useFormatDate from '../../hooks/useFormatDate';
+import { Skeleton } from '@mui/material';
 
 export default function Home() {
 
@@ -187,15 +188,29 @@ export default function Home() {
                         } */}
 
                         {(isFetchingNextPage || !isPostsFetched) && (
-                            <ColorRing
-                                visible={true}
-                                height="80"
-                                width="80"
-                                ariaLabel="color-ring-loading"
-                                wrapperStyle={{}}
-                                wrapperClass="color-ring-wrapper"
-                                colors={["#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9"]}
-                            />
+                            // <ColorRing
+                            //     visible={true}
+                            //     height="80"
+                            //     width="80"
+                            //     ariaLabel="color-ring-loading"
+                            //     wrapperStyle={{}}
+                            //     wrapperClass="color-ring-wrapper"
+                            //     colors={["#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9", "#A9A9A9"]}
+                            // />
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: '2rem' }}>
+                                {Array.from({ length: 8 }, (_, i) => (
+                                    <div key={i}>
+                                        <Skeleton animation="wave" variant="rounded" width={375} height={230} sx={{ borderRadius: '10px', backgroundColor: '#2c2c2c' }} />
+                                        <div style={{ marginTop: '0.3rem', display: 'flex', gap: '1rem' }}>
+                                            <Skeleton animation="wave" variant="circular" width={50} height={50} sx={{ fontSize: '1rem', backgroundColor: '#2c2c2c' }} />
+                                            <div>
+                                                <Skeleton animation="wave" variant="text" width={307} height={30} sx={{ fontSize: '1rem', backgroundColor: '#2c2c2c' }} />
+                                                <Skeleton animation="wave" variant="text" width={307} height={23} sx={{ fontSize: '1rem', backgroundColor: '#2c2c2c' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>

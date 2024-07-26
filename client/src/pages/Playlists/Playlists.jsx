@@ -13,9 +13,8 @@ export default function Playlists() {
 
     const fetchPlaylists = async () => {
         try {
-            const res = await axios.get(`/api/playlist/user/${currentUser._id}`, { withCredentials: true });
+            const res = await axios.get(`/api/playlist/user/${currentUser?._id}`, { withCredentials: true });
             const data = res.data;
-            // console.log(data)
             setUserPlaylists(data.data);
         } catch (error) {
             console.log(error)
@@ -23,7 +22,9 @@ export default function Playlists() {
     }
 
     useEffect(() => {
-        fetchPlaylists();
+        if (currentUser) {
+            fetchPlaylists();
+        }
     }, [])
 
     const handleClick = (playlistId) => {
@@ -31,24 +32,32 @@ export default function Playlists() {
     }
 
     return (
-        <div className={styles.playlistMainDiv}>
-            {userPlaylists?.map((playlist, i) => (
-                <div className={styles.playlistCard} key={i} onClick={() => handleClick(playlist?._id)}>
-                    <div className={styles.imageContainer}>
-                        <img className={styles.playlistImage} src={playlist?.videos[0]?.thumbnail} alt="" />
-                        <div className={styles.overlay}></div>
-                    </div>
-                    <div className={styles.playlistInfo}>
-                        <div className={styles.playlistTitle}>{playlist?.name}</div>
-                        <div className={styles.playlistMeta}>
-                            <span>100k Views</span>
-                            <span>•</span>
-                            <span>18 hours ago</span>
+        <>
+            {currentUser ? (
+                <div className={styles.playlistMainDiv}>
+                    {userPlaylists?.map((playlist, i) => (
+                        <div className={styles.playlistCard} key={i} onClick={() => handleClick(playlist?._id)}>
+                            <div className={styles.imageContainer}>
+                                <img className={styles.playlistImage} src={playlist?.videos[0]?.thumbnail} alt="" />
+                                <div className={styles.overlay}></div>
+                            </div>
+                            <div className={styles.playlistInfo}>
+                                <div className={styles.playlistTitle}>{playlist?.name}</div>
+                                <div className={styles.playlistMeta}>
+                                    <span>100k Views</span>
+                                    <span>•</span>
+                                    <span>18 hours ago</span>
+                                </div>
+                                <div className={styles.playlistVideos}>{playlist?.videos?.length} videos</div>
+                            </div>
                         </div>
-                        <div className={styles.playlistVideos}>{playlist?.videos?.length} videos</div>
-                    </div>
+                    ))}
                 </div>
-            ))}
-        </div>
+            ) : (
+                <div>
+                    <h1>Please sign in to view your playlists</h1>
+                </div>
+            )}
+        </>
     )
 }

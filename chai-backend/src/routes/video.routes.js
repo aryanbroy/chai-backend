@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+    autoCompleteSuggestions,
     deleteVideo,
     getAllVideoExceptOne,
     getAllVideos,
@@ -33,6 +34,8 @@ router
         ]),
         publishAVideo
     );
+
+router.route("/suggestions").post(autoCompleteSuggestions);
 
 router
     .route("/:videoId")

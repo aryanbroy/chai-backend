@@ -89,6 +89,35 @@ const getAllVideos = asyncHandler(async (req, res) => {
     })
 })
 
+export const autoCompleteSuggestions = asyncHandler(async (req, res) => {
+    const { query } = req.body;
+
+    const suggestions = await Video.aggregate([
+        {
+            $search: {
+                index: "autoCompleteVideos",
+                "autocomplete": {
+                    "query": query,
+                    "path": "title",
+                    "tokenOrder": "sequential",
+                    // "fuzzy": {},
+                    // "score": <options>
+                }
+            }
+        },
+        {
+            $limit: 10
+        },
+        {
+            $project: {
+                title: 1
+            }
+        }
+    ]);
+
+    return res.status(200).json(new ApiResponse(200, suggestions, "Suggestions found successfully"));
+})
+
 const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description } = req.body
 

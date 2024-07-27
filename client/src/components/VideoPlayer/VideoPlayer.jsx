@@ -10,11 +10,20 @@ import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "reac
 import { IoIosShareAlt } from "react-icons/io";
 import { PiShareFatLight } from "react-icons/pi";
 import { useSelector } from 'react-redux'
-import { Button, TextField } from "@mui/material"
+import { Button, Dialog, DialogTitle, TextField } from "@mui/material"
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useIntersection } from '@mantine/hooks';
 import { toast } from 'react-toastify'
 import SimpleDialog from './SimpleDialog';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import '@fontsource/inter';
+import ShareDialog from './ShareDialog';
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
 
 
 const posts = [
@@ -40,6 +49,7 @@ export default function VideoPlayer() {
     const [comments, setComments] = useState([]);
     const [open, setOpen] = useState(false)
     const [playlists, setPlaylists] = useState(null);
+    const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
     // console.log(videoDetails)
 
@@ -185,13 +195,10 @@ export default function VideoPlayer() {
         }
     })
 
-    const handleShare = () => {
-        navigator.clipboard.writeText(window.location.href)
-        // console.log("success")
-        toast.success("Link copied to clipboard", {
-            theme: "light",
-        })
+    const handleShareBtnClick = () => {
+        setShareDialogOpen(true)
     }
+
 
     const handleSaveBtnClick = () => {
         setOpen(true)
@@ -199,6 +206,7 @@ export default function VideoPlayer() {
 
     const handleClose = () => {
         setOpen(false)
+        setShareDialogOpen(false)
     }
 
     const fetchPlaylists = async () => {
@@ -256,7 +264,8 @@ export default function VideoPlayer() {
                                         <div className={styles.likeDiv} onClick={handleLike}>{likedByUser ? <AiFillLike /> : <AiOutlineLike />} {videoLikes}</div>
                                         <div className={styles.dislikeDiv}><AiOutlineDislike /></div>
                                     </div>
-                                    <div className={styles.shareDiv} onClick={handleShare}><PiShareFatLight /> Share</div>
+                                    <div className={styles.shareDiv} onClick={handleShareBtnClick}><PiShareFatLight /> Share</div>
+                                    <ShareDialog shareDialogOpen={shareDialogOpen} onShareClose={handleClose} />
                                     <div className={styles.saveDiv} onClick={handleSaveBtnClick}><FaRegSave /> Save</div>
                                     <SimpleDialog open={open} onClose={handleClose} playlists={playlists} setPlaylists={setPlaylists} videoId={videoId} />
                                 </div>

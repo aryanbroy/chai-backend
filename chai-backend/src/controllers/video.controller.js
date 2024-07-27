@@ -12,30 +12,19 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const options = {
         page: parseInt(page),
         limit: parseInt(limit),
-        sort: {
-            [sortBy || "createdAt"]: parseInt(sortType) || -1
-        }
     }
 
     let myAggregate;
 
     const pipeline = [
         {
-            $match: {
-                $or: [
-                    {
-                        title: {
-                            $regex: query || "",
-                            $options: "i"
-                        }
-                    },
-                    {
-                        description: {
-                            $regex: query || "",
-                            $options: "i"
-                        }
-                    }
-                ]
+            $search: {
+                index: 'videoSearch',
+                text: {
+                    query,
+                    path: ['title', 'description'],
+                    fuzzy: {}
+                }
             }
         },
         {
@@ -54,7 +43,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
                     }
                 ]
             }
-        }
+        },
     ]
 
     if (query || userId) {

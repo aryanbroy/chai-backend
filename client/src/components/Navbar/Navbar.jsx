@@ -52,6 +52,7 @@ export default function Navbar() {
     const handleClick = (query) => {
         setSuggestionBoxOpen(false)
         setSearchInputValue(query)
+        query = query.replace(" ", "+")
         navigate(`/results?query=${query}`)
     }
 

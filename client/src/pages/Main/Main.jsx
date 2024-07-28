@@ -9,10 +9,13 @@ import History from '../History/History'
 import Playlists from '../Playlists/Playlists'
 import Playlist from '../../components/Playlist/Playlist'
 import LikedVideos from '../LikedVideos/LikedVideos'
+import SearchPage from '../SearchPage/SearchPage'
+import { useQuery } from '../../hooks/useQuery'
 
 export default function Main() {
 
     const { channelId, playlistId } = useParams()
+
     return (
         <div className={styles.homeDiv}>
             <div>
@@ -28,6 +31,7 @@ export default function Main() {
                     {location.pathname === "/history" && <History />}
                     {location.pathname === `/playlist/${playlistId}` && <Playlist />}
                     {location.pathname === "/likedVideos" && <LikedVideos />}
+                    {location.pathname === `/results` && <SearchPage />}
                 </div>
             </div>
         </div>

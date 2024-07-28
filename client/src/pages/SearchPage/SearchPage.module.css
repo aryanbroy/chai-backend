@@ -1,0 +1,39 @@
+.mainDiv {
+    margin-top: 20px;
+}
+
+.videoThumbnail {
+    width: 500px;
+    height: 270px;
+    border-radius: 12px;
+}
+
+.cardDiv {
+    display: flex;
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.ownerInfo {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ownerImg {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.videoOwnerName {
+    color: rgb(196, 195, 195);
+    font-size: 0.9rem;
+    padding-left: 0;
+}
+
+.videoDescription {
+    color: rgb(196, 195, 195);
+    padding-left: 0;
+}

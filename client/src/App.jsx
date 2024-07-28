@@ -13,7 +13,6 @@ import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-
   return (
     <>
       <ToastContainer theme='dark' position='top-center' autoClose={3000} stacked draggable />
@@ -29,6 +28,7 @@ function App() {
           <Route path="/playlists" element={<Main />} />
           <Route path='/playlist/:playlistId' element={<Main />} />
           <Route path='/likedVideos' element={<Main />} />
+          <Route path='/results' element={<Main />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/watch/:videoId' element={<VideoPlayer />} />

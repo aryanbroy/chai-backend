@@ -128,16 +128,18 @@ export default function Navbar() {
                             }}
                         />
                         <Button
+                            disabled={searchInputValue.length <= 0}
                             onMouseDown={(e) => handleMouseDown(e)}
                             onClick={() => handleClick(searchInputValue)}
                             variant='text'
                             sx={{
                                 border: "1px solid #848482",
                                 borderTopRightRadius: "25px",
-                                borderBottomRightRadius: "25px", color: "#A9A9A9", backgroundColor: "#343434", marginLeft: "-5px"
+                                borderBottomRightRadius: "25px", color: "#A9A9A9", backgroundColor: "#343434", marginLeft: "-5px",
+                                cursor: "pointer",
                             }}>
 
-                            <FaSearch size={28} />
+                            <FaSearch color='#A9A9A9' size={28} />
                         </Button>
                     </div>
                     {(!suggestionsLoading && searchInputValue.length > 0 && suggestionBoxOpen) && (

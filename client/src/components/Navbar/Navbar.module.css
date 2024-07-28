@@ -2,6 +2,7 @@
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
     position: sticky;
     top: 0;
+    height: fit-content;
     background-color: #343434;
     z-index: 1000;
 }
@@ -49,4 +50,13 @@
     background-color: #343434;
     border-radius: 2px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.suggestionsPara:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }

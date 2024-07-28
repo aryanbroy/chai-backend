@@ -4,7 +4,7 @@ import { RiVideoUploadFill } from "react-icons/ri";
 import { IoNotifications } from "react-icons/io5";
 import { Button, TextField } from '@mui/material'
 import { FaSearch } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios'
 
@@ -13,8 +13,12 @@ export default function Navbar() {
     const { currentUser } = useSelector((state) => state.user);
     const searchDivRef = useRef(null);
     const [searchWidth, setSearchWidth] = useState("auto");
-    const [searchInputValue, setSearchInputValue] = useState("sf");
+    const [searchInputValue, setSearchInputValue] = useState("");
     const [suggestions, setSuggestions] = useState(null);
+    const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+    const [suggestionBoxOpen, setSuggestionBoxOpen] = useState(false)
+    const navigate = useNavigate();
+    const suggestionBoxRef = useRef(null)
 
     useEffect(() => {
         if (searchDivRef.current) {
@@ -23,22 +27,45 @@ export default function Navbar() {
     }, [])
 
 
-
     useEffect(() => {
         const fetchSuggestions = async () => {
+            // setSuggestions(null)
+            setSuggestionsLoading(true)
+            setSuggestionBoxOpen(true);
             try {
                 const res = await axios.post(`/api/videos/suggestions`, { query: searchInputValue });
                 const { data } = res.data;
                 setSuggestions(data);
             } catch (error) {
                 console.log(error)
+            } finally {
+                setSuggestionsLoading(false)
             }
         }
-        if (searchInputValue.length > 0) {
+        if (searchInputValue.length > 0 && !suggestions?.some((suggestion) => suggestion.title.includes(searchInputValue))) {
             fetchSuggestions();
         }
 
     }, [searchInputValue])
+
+
+    const handleClick = (query) => {
+        setSuggestionBoxOpen(false)
+        setSearchInputValue(query)
+        navigate(`/results?query=${query}`)
+    }
+
+    const handleMouseDown = (e) => {
+        e.preventDefault();
+    }
+
+    const handleFocus = () => {
+        setSuggestionBoxOpen(true)
+    }
+
+    const handleBlur = () => {
+        setSuggestionBoxOpen(false)
+    }
 
     return (
         <div className={styles.navMainDiv}>
@@ -51,6 +78,9 @@ export default function Navbar() {
                 <div className={styles.searchDiv}>
                     <div>
                         <TextField
+                            onFocus={handleFocus}
+                            onBlur={handleBlur}
+                            autoComplete='off'
                             value={searchInputValue}
                             onChange={(e) => setSearchInputValue(e.target.value)}
                             ref={searchDivRef} id="outlined-basic" placeholder='Search'
@@ -73,10 +103,10 @@ export default function Navbar() {
                         />
                         <Button variant='text' sx={{ border: "1px solid #848482", borderTopRightRadius: "25px", borderBottomRightRadius: "25px", color: "#A9A9A9", backgroundColor: "#343434", marginLeft: "-5px" }}><FaSearch size={28} /></Button>
                     </div>
-                    {searchInputValue.length > 0 && (
-                        <div className={styles.suggestionsDiv} style={{ width: searchWidth }}>
+                    {(!suggestionsLoading && searchInputValue.length > 0 && suggestionBoxOpen) && (
+                        <div ref={suggestionBoxRef} className={styles.suggestionsDiv} style={{ width: searchWidth }}>
                             {suggestions?.map((suggestion, i) => (
-                                <p key={i}>{suggestion.title}</p>
+                                <Button type='submit' onMouseDown={(e) => handleMouseDown(e)} onClick={() => handleClick(suggestion.title.toLowerCase())} className={styles.suggestionsPara} key={i}>{suggestion.title.toLowerCase()}</Button>
                             ))}
                         </div>
                     )}

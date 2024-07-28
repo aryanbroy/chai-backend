@@ -10,13 +10,11 @@ const SearchPage = () => {
 
     const query = useQuery();
     const searchQuery = query.get("query");
-    const [searchResults, setSearchResults] = useState(null);
 
 
     const fetchVideos = async (page, query = searchQuery) => {
         const res = await axios.get(`/api/videos/?page=${page}&limit=10&query=${query}`);
         const { data } = res.data;
-        // console.log(data)
         return data;
     }
 

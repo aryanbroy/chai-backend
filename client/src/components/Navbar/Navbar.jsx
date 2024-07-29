@@ -29,6 +29,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const fetchSuggestions = async () => {
+            console.log("fetching suggestions")
             // setSuggestions(null)
             setSuggestionsLoading(true)
             setSuggestionBoxOpen(true);
@@ -42,7 +43,10 @@ export default function Navbar() {
                 setSuggestionsLoading(false)
             }
         }
-        if (searchInputValue.length > 0 && !suggestions?.some((suggestion) => suggestion.title.includes(searchInputValue))) {
+        if (searchInputValue.length > 0
+            &&
+            !suggestions?.some((suggestion) => suggestion.title.startsWith(searchInputValue))
+        ) {
             fetchSuggestions();
         }
 
@@ -150,7 +154,16 @@ export default function Navbar() {
                                     onMouseDown={(e) => handleMouseDown(e)}
                                     onClick={() => handleClick(suggestion.title.toLowerCase())}
                                     className={styles.suggestionsPara}
-                                    key={i}>
+                                    key={i}
+                                    sx={{
+                                        textTransform: "lowercase",
+                                        width: "100%",
+                                        display: "flex",
+                                        justifyContent: "start",
+                                        paddingLeft: "10px",
+                                        color: "white"
+                                    }}
+                                >
                                     {suggestion.title.toLowerCase()}
                                 </Button>
                             ))}

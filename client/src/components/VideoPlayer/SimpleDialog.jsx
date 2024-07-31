@@ -20,18 +20,20 @@ export default function SimpleDialog({ open, onClose, playlists, videoId }) {
     const [isFormActive, setIsFormActive] = useState(false);
     const [playlistValues, setPlaylistValues] = useState({ name: "", description: "" });
     const { currentUser } = useSelector((state) => state.user);
-    // console.log(checkedValues)
     // console.log(playlists)
 
+    // console.log(videoId)
+
     useEffect(() => {
+        setCheckedValues([])
         playlists?.map((playlist) => {
             if (playlist.videoAdded) {
                 if (!checkedValues.includes(playlist._id)) {
-                    setCheckedValues([...checkedValues, playlist._id])
+                    setCheckedValues((prev) => [...prev, playlist._id])
                 }
             }
         })
-    }, [playlists])
+    }, [videoId, playlists])
 
     const handleClose = () => {
         onClose();

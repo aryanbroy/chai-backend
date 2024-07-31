@@ -5,19 +5,81 @@ import { useQuery } from '../../hooks/useQuery'
 import axios from 'axios'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
-import { Skeleton } from '@mui/material'
+import { Button, Skeleton } from '@mui/material'
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import useFormatDate from '../../hooks/useFormatDate'
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { MdOutlinePlaylistAdd } from "react-icons/md";
+import { IoIosShareAlt } from 'react-icons/io'
+import { useSelector } from 'react-redux'
+import SimpleDialog from '../../components/VideoPlayer/SimpleDialog'
 
 const SearchPage = () => {
+
+    const { currentUser } = useSelector((state) => state.user);
+
+    const [videoId, setVideoId] = useState(null);
 
     const query = useQuery();
     const searchQuery = query.get("query");
     const navigate = useNavigate();
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const [playlists, setPlaylists] = useState([]);
+    const [showPlaylists, setShowPlaylists] = useState(false);
+
+    const handleAddPlaylistBtnClick = () => {
+        handleMenuClose();
+        setShowPlaylists(true);
+    }
+
+    const handleClose = () => {
+        setShowPlaylists(false)
+        playlists?.map((playlist) => playlist.videoAdded = false)
+    }
+
+    const handleShareBtnClick = (videoId) => {
+        handleMenuClose();
+        console.log("share dialog open " + videoId)
+    }
+
+    // console.log(playlists)
+    const handleMenuClick = (e, videoId) => {
+        setAnchorEl(e.currentTarget)
+        // playlists && console.log(playlists)
+        // console.log(playlists)
+        setVideoId(videoId)
+        playlists?.map((playlist) => {
+            if (playlist.videos.some((video) => video._id === videoId)) {
+                playlist.videoAdded = true;
+            } else {
+                playlist.videoAdded = false;
+            }
+        })
+        // console.log(videoId)
+    }
+
+    const handleMenuClose = (e) => {
+        setAnchorEl(null)
+    }
+
 
     const fetchVideos = async (page, query = searchQuery) => {
         const res = await axios.get(`/api/videos/?page=${page}&limit=10&query=${query}`);
-        const { data } = res.data;
         // data contains fields like nextPage, totalPages, etc and also an docs array which contains all videos
+        const { data } = res.data;
+        // console.log(data)
+        data.docs.map((video) => {
+            if (video.description.length > 100) {
+                video.description = video.description.slice(0, 100) + "...";
+            }
+            const date = new Date(video.createdAt);
+            const formattedDate = useFormatDate(date);
+            video.uploadedTimeAgo = formattedDate;
+        })
         return data;
     }
 
@@ -37,7 +99,6 @@ const SearchPage = () => {
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
     const handleVideoClick = async (videoId) => {
-        console.log(videoId);
         navigate(`/watch/${videoId}`)
     }
 
@@ -45,6 +106,30 @@ const SearchPage = () => {
         // console.log(channelId);
         navigate(`/channel/${channelId}`)
     }
+
+    const fetchPlaylists = async () => {
+        try {
+            const res = await axios.get(`/api/playlist/user/${currentUser?._id}`, { withCredentials: true });
+            const { data } = res.data;
+            // data.map((playlist) => {
+            //     if (playlist.videos.some((video) => video._id === videoId)) {
+            //         playlist.videoAdded = true;
+            //     }
+            //     else {
+            //         playlist.videoAdded = false;
+            //     }
+            // })
+            // console.log(data)
+            setPlaylists(data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        if (currentUser) {
+            fetchPlaylists();
+        }
+    }, [currentUser])
 
     return (
         status === "pending" ? (
@@ -77,10 +162,49 @@ const SearchPage = () => {
                                         <img className={styles.videoThumbnail} src={video.thumbnail} alt="" />
                                     </div>
                                     <div className={styles.videoContents}>
-                                        <h3 className={styles.videoTitle} onClick={() => handleVideoClick(video._id)}>{video.title}</h3>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <h4 className={styles.videoTitle} onClick={() => handleVideoClick(video._id)}>{video.title}</h4>
+                                            <Button
+                                                aria-controls={open ? 'basic-menu' : undefined}
+                                                aria-haspopup="true"
+                                                aria-expanded={open ? 'true' : undefined}
+                                                onClick={(e) => handleMenuClick(e, video._id)}
+                                                size='small'
+                                                variant='text'
+                                                style={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }}
+                                                sx={{
+                                                    borderRadius: "50%",
+                                                    padding: "0px",
+                                                }}
+                                            >
+                                                <HiOutlineDotsVertical style={{ color: "white", fontWeight: "900" }} size={20} />
+                                            </Button>
+                                            <Menu
+                                                anchorEl={anchorEl}
+                                                open={open}
+                                                onClose={handleMenuClose}
+                                                MenuListProps={{
+                                                    'aria-labelledby': 'basic-button'
+                                                }}
+                                                sx={{
+                                                    '& .MuiPaper-root': {
+                                                        backgroundColor: "#343434",
+                                                        color: "white",
+                                                        boxShadow: "rgba(0, 0, 0, 0.06) 0px 2px 8px 0px"
+                                                    }
+                                                }}
+                                            >
+                                                <MenuItem onClick={() => handleAddPlaylistBtnClick()}>
+                                                    <MdOutlinePlaylistAdd size={20} style={{ marginRight: '5px' }} /> Add to playlist
+                                                </MenuItem>
+                                                <MenuItem>
+                                                    <IoIosShareAlt size={20} style={{ marginRight: '5px' }} />Share
+                                                </MenuItem>
+                                            </Menu>
+                                        </div>
 
                                         <div style={{ marginBottom: "6px" }} onClick={() => handleVideoClick(video._id)}>
-                                            <span style={{ color: "rgb(196, 195, 195)", fontSize: "14px" }}>{video.views} views • 1 year ago</span>
+                                            <span style={{ color: "rgb(196, 195, 195)", fontSize: "14px" }}>{video.views} views • {video.uploadedTimeAgo}</span>
                                         </div>
 
                                         <div className={styles.ownerInfo}>
@@ -94,6 +218,7 @@ const SearchPage = () => {
                             ))}
                         </div>
                     ))}
+                    <SimpleDialog open={showPlaylists} onClose={handleClose} playlists={playlists} videoId={videoId} />
                     <div ref={ref}></div>
                 </div>
     )

@@ -14,6 +14,7 @@ import { MdOutlinePlaylistAdd } from "react-icons/md";
 import { IoIosShareAlt } from 'react-icons/io'
 import { useSelector } from 'react-redux'
 import SimpleDialog from '../../components/VideoPlayer/SimpleDialog'
+import ShareDialog from '../../components/VideoPlayer/ShareDialog'
 
 const SearchPage = () => {
 
@@ -30,7 +31,8 @@ const SearchPage = () => {
 
     const [playlists, setPlaylists] = useState([]);
     const [showPlaylists, setShowPlaylists] = useState(false);
-
+    const [showShareDialogOpen, setShowDialogOpen] = useState(false);
+    const [videoLink, setVideoLink] = useState("");
     const handleAddPlaylistBtnClick = () => {
         handleMenuClose();
         setShowPlaylists(true);
@@ -38,20 +40,20 @@ const SearchPage = () => {
 
     const handleClose = () => {
         setShowPlaylists(false)
+        setShowDialogOpen(false);
         playlists?.map((playlist) => playlist.videoAdded = false)
     }
 
-    const handleShareBtnClick = (videoId) => {
+    const handleShareBtnClick = () => {
         handleMenuClose();
-        console.log("share dialog open " + videoId)
+        setShowDialogOpen(true)
     }
 
-    // console.log(playlists)
     const handleMenuClick = (e, videoId) => {
         setAnchorEl(e.currentTarget)
-        // playlists && console.log(playlists)
-        // console.log(playlists)
         setVideoId(videoId)
+        const parsedUrl = new URL(window.location.href)
+        setVideoLink(`${parsedUrl.origin}/watch/${videoId}`)
         playlists?.map((playlist) => {
             if (playlist.videos.some((video) => video._id === videoId)) {
                 playlist.videoAdded = true;
@@ -59,7 +61,6 @@ const SearchPage = () => {
                 playlist.videoAdded = false;
             }
         })
-        // console.log(videoId)
     }
 
     const handleMenuClose = (e) => {
@@ -71,7 +72,6 @@ const SearchPage = () => {
         const res = await axios.get(`/api/videos/?page=${page}&limit=10&query=${query}`);
         // data contains fields like nextPage, totalPages, etc and also an docs array which contains all videos
         const { data } = res.data;
-        // console.log(data)
         data.docs.map((video) => {
             if (video.description.length > 100) {
                 video.description = video.description.slice(0, 100) + "...";
@@ -103,7 +103,6 @@ const SearchPage = () => {
     }
 
     const goToChannel = (channelId) => {
-        // console.log(channelId);
         navigate(`/channel/${channelId}`)
     }
 
@@ -111,15 +110,6 @@ const SearchPage = () => {
         try {
             const res = await axios.get(`/api/playlist/user/${currentUser?._id}`, { withCredentials: true });
             const { data } = res.data;
-            // data.map((playlist) => {
-            //     if (playlist.videos.some((video) => video._id === videoId)) {
-            //         playlist.videoAdded = true;
-            //     }
-            //     else {
-            //         playlist.videoAdded = false;
-            //     }
-            // })
-            // console.log(data)
             setPlaylists(data);
         } catch (error) {
             console.log(error)
@@ -197,7 +187,7 @@ const SearchPage = () => {
                                                 <MenuItem onClick={() => handleAddPlaylistBtnClick()}>
                                                     <MdOutlinePlaylistAdd size={20} style={{ marginRight: '5px' }} /> Add to playlist
                                                 </MenuItem>
-                                                <MenuItem>
+                                                <MenuItem onClick={() => handleShareBtnClick()}>
                                                     <IoIosShareAlt size={20} style={{ marginRight: '5px' }} />Share
                                                 </MenuItem>
                                             </Menu>
@@ -219,6 +209,7 @@ const SearchPage = () => {
                         </div>
                     ))}
                     <SimpleDialog open={showPlaylists} onClose={handleClose} playlists={playlists} videoId={videoId} />
+                    <ShareDialog shareDialogOpen={showShareDialogOpen} onShareClose={handleClose} href={videoLink} />
                     <div ref={ref}></div>
                 </div>
     )

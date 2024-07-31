@@ -13,7 +13,8 @@ const darkTheme = createTheme({
     },
 });
 
-const ShareDialog = ({ shareDialogOpen, onShareClose }) => {
+const ShareDialog = ({ shareDialogOpen, onShareClose, href }) => {
+
 
     const [icon, setIcon] = useState(<LuCopy style={{ color: 'black' }} size={18} />);
 
@@ -26,7 +27,7 @@ const ShareDialog = ({ shareDialogOpen, onShareClose }) => {
         setTimeout(() => {
             setIcon(<LuCopy style={{ color: 'black' }} size={18} />)
         }, 2000)
-        navigator.clipboard.writeText(window.location.href)
+        navigator.clipboard.writeText(href || window.location.href)
         toast.success("Link copied to clipboard", {
             style: {
                 backgroundColor: "#343434",
@@ -69,7 +70,7 @@ const ShareDialog = ({ shareDialogOpen, onShareClose }) => {
                                 },
                             }}
                             variant="outlined"
-                            value={window.location.href}
+                            value={href || window.location.href}
                         />
                         <Button
                             sx={{

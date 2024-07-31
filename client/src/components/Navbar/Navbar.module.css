@@ -19,7 +19,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 50px;
+    gap: 40px;
 }
 
 .heading {
@@ -60,4 +60,9 @@
 .suggestionsPara:hover {
     background-color: rgba(0, 0, 0, 0.1) !important;
     cursor: pointer;
+}
+
+.uploadDiv {
+    cursor: pointer;
+
 }

@@ -11,6 +11,7 @@ import Subscription from './pages/Subscription/Subscription'
 import Sidebar from './components/Sidebar/Sidebar'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
+import UploadVideo from './pages/UploadVideo/UploadVideo'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path='/playlist/:playlistId' element={<Main />} />
           <Route path='/likedVideos' element={<Main />} />
           <Route path='/results' element={<Main />} />
+          <Route path='/upload/video' element={<UploadVideo />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/watch/:videoId' element={<VideoPlayer />} />

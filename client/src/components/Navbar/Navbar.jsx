@@ -26,7 +26,6 @@ export default function Navbar() {
         }
     }, [])
 
-
     useEffect(() => {
         const fetchSuggestions = async () => {
             // setSuggestions(null)
@@ -69,6 +68,10 @@ export default function Navbar() {
 
     const handleBlur = () => {
         setSuggestionBoxOpen(false)
+    }
+
+    const handleUploadClick = () => {
+        navigate('/upload/video')
     }
 
     return (
@@ -170,8 +173,39 @@ export default function Navbar() {
                     )}
                 </div>
                 <div className={styles.rightSideNav}>
-                    <RiVideoUploadFill size={30} />
-                    <IoNotifications size={30} />
+                    <Button
+                        className={styles.uploadDiv}
+                        onClick={handleUploadClick}
+                        style={{
+                            minWidth: '40px',
+                            maxWidth: '40px'
+                        }}
+                        sx={{
+                            padding: "0",
+                            color: "white",
+                            '&:hover': {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                            }
+                        }}
+                    >
+                        <RiVideoUploadFill size={30} />
+                    </Button>
+                    <Button
+                        className={styles.uploadDiv}
+                        style={{
+                            minWidth: '40px',
+                            maxWidth: '40px'
+                        }}
+                        sx={{
+                            padding: "0",
+                            color: "white",
+                            '&:hover': {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                            }
+                        }}
+                    >
+                        <IoNotifications size={30} />
+                    </Button>
                     {currentUser ? (
                         <div className={styles.avatarDiv}>
                             <img src={currentUser?.avatar} alt="avatar" className={styles.avatar} />

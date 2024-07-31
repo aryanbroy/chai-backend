@@ -146,6 +146,14 @@ export default function VideoPlayer() {
         }
     }
 
+    const increaseView = async () => {
+        try {
+            await axios.patch(`/api/videos/increase/view/${videoId}`, {}, { withCredentials: true });
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         const fetchAllData = async () => {
             try {
@@ -156,7 +164,8 @@ export default function VideoPlayer() {
                     fetchSuggestedVideos(),
                     fetchLikedByUser(),
                     // fetchComments(),
-                    fetchPlaylists()
+                    fetchPlaylists(),
+                    increaseView()
                 ])
             } catch (error) {
                 // console.log(error)
@@ -167,12 +176,12 @@ export default function VideoPlayer() {
 
     const handleSidebarClick = async (video) => {
         navigate(`/watch/${video?._id}`);
-        try {
-            const res = await axios.patch(`/api/videos/increase/view/${video?._id}`, {}, { withCredentials: true });
-            const data = res.data;
-        } catch (error) {
-            console.log(error)
-        }
+        // try {
+        //     const res = await axios.patch(`/api/videos/increase/view/${video?._id}`, {}, { withCredentials: true });
+        //     const data = res.data;
+        // } catch (error) {
+        //     console.log(error)
+        // }
     }
 
     const fetchPost = async (page) => {
@@ -224,7 +233,7 @@ export default function VideoPlayer() {
             })
             setPlaylists(data);
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     }
 

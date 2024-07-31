@@ -29,7 +29,6 @@ export default function Navbar() {
 
     useEffect(() => {
         const fetchSuggestions = async () => {
-            console.log("fetching suggestions")
             // setSuggestions(null)
             setSuggestionsLoading(true)
             setSuggestionBoxOpen(true);

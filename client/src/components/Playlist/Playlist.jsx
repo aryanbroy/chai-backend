@@ -64,11 +64,11 @@ export default function Playlist() {
 
     const handleClick = async (post) => {
         navigate(`/watch/${post?._id}`);
-        try {
-            const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
-        } catch (error) {
-            console.log(error)
-        }
+        // try {
+        //     const res = await axios.patch(`/api/videos/increase/view/${post?._id}`, {}, { withCredentials: true });
+        // } catch (error) {
+        //     console.log(error)
+        // }
     }
 
     return (

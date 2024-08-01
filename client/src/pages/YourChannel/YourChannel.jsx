@@ -3,10 +3,14 @@ import styles from './YourChannel.module.css'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Card, CardContent, CardMedia, TextField, Typography } from '@mui/material'
+import { Button, Card, CardContent, CardMedia, Menu, MenuItem, TextField, Typography } from '@mui/material'
 import { FaPlay } from 'react-icons/fa';
 import useFormatDate from '../../hooks/useFormatDate';
 import Tweet from '../../components/Tweet/Tweet';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBinLine } from "react-icons/ri";
+
 
 export default function YourChannel() {
     const [isOwner, setIsOwner] = useState(false);
@@ -21,6 +25,9 @@ export default function YourChannel() {
     const [subscriptionStatus, setSubscriptionStatus] = useState({});
     const [followerSearchValue, setFollowerSearchValue] = useState("");
     const [filteredValues, setFilteredValues] = useState(null);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
     const handleButtonClick = (e) => {
         setButtonSelected(e.target.id);
@@ -127,6 +134,15 @@ export default function YourChannel() {
         setFilteredValues(subscribers?.filter((subscriber) => subscriber.subscriber.username.toLowerCase().includes(e.target.value.toLowerCase())))
     }
 
+    const handleMenuClose = (e) => {
+        setAnchorEl(null)
+    }
+
+    const handleMenuClick = (e, videoId) => {
+        console.log(videoId)
+        setAnchorEl(e.currentTarget)
+    }
+
     return (
         <>
             <div className={styles.upperDiv}>
@@ -220,10 +236,53 @@ export default function YourChannel() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <CardContent sx={{ padding: "0", paddingTop: '5px' }}>
-                                                    <Typography gutterBottom variant="h5" component="div" sx={{ color: "white", fontSize: "22px" }}>
-                                                        {video?.title}
-                                                    </Typography>
+                                                <CardContent sx={{ padding: "0", paddingTop: '8px', paddingRight: '5px' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <Typography gutterBottom variant="h5" component="div" sx={{ color: "white", fontSize: "22px" }}>
+                                                            {video?.title}
+                                                        </Typography>
+                                                        <Button
+                                                            style={{ maxWidth: '35px', maxHeight: '35px', minWidth: '35px', minHeight: '35px' }}
+                                                            sx={{
+                                                                borderRadius: "50%",
+                                                                padding: "0px",
+                                                                '&:hover': {
+                                                                    backgroundColor: "rgba(255,255,255,0.1)",
+                                                                }
+                                                            }}
+                                                            onClick={(e) => handleMenuClick(e, video?._id)}
+                                                        >
+                                                            <HiOutlineDotsVertical style={{ color: 'white' }} size={20} />
+                                                        </Button>
+                                                        <Menu
+                                                            anchorEl={anchorEl}
+                                                            open={open}
+                                                            onClose={handleMenuClose}
+                                                            MenuListProps={{
+                                                                'aria-labelledby': 'basic-button'
+                                                            }}
+                                                            sx={{
+                                                                '& .MuiPaper-root': {
+                                                                    backgroundColor: "#343434",
+                                                                    color: "white",
+                                                                    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px'
+                                                                }
+                                                            }}
+                                                        >
+                                                            <MenuItem
+                                                                sx={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    textAlign: 'left'
+                                                                }}
+                                                            >
+                                                                <FiEdit style={{ marginRight: '8px' }} size={18} /> Edit
+                                                            </MenuItem>
+                                                            <MenuItem style={{ color: 'red', display: 'flex', alignItems: 'center', textAlign: 'left' }}>
+                                                                <RiDeleteBinLine style={{ marginRight: '8px' }} size={18} /> Delete
+                                                            </MenuItem>
+                                                        </Menu>
+                                                    </div>
                                                     <Typography component={"div"} variant="body2" color="text.secondary" sx={{ color: "white", padding: "0" }}>
                                                         <div className={styles.playlistMeta}>
                                                             <span style={{ color: "rgb(196, 195, 195)" }}>{video?.views} Views</span>
@@ -293,7 +352,7 @@ export default function YourChannel() {
                 ) : (
                     <p>Create account</p>
                 )}
-            </div>
+            </div >
         </>
     )
 }

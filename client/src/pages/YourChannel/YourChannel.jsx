@@ -10,6 +10,7 @@ import Tweet from '../../components/Tweet/Tweet';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { toast } from 'react-toastify';
 
 
 export default function YourChannel() {
@@ -25,6 +26,7 @@ export default function YourChannel() {
     const [subscriptionStatus, setSubscriptionStatus] = useState({});
     const [followerSearchValue, setFollowerSearchValue] = useState("");
     const [filteredValues, setFilteredValues] = useState(null);
+    const [videoId, setVideoId] = useState(null)
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -139,8 +141,32 @@ export default function YourChannel() {
     }
 
     const handleMenuClick = (e, videoId) => {
-        console.log(videoId)
         setAnchorEl(e.currentTarget)
+        setVideoId(videoId)
+    }
+
+    const handleEditBtnClick = () => {
+        setAnchorEl(null);
+        console.log(videoId)
+    }
+
+    const handleVideoDeleteBtnClick = async () => {
+        setAnchorEl(null);
+        setChannelVideos(channelVideos.filter((video) => video._id !== videoId));
+        try {
+            const res = await axios.delete(`/api/videos/${videoId}`, { withCredentials: true });
+            const data = res.data;
+            toast.success(data.message, {
+                position: 'top-center',
+                style: {
+                    backgroundColor: '#343434',
+                }
+
+            })
+        } catch (error) {
+            console.log(error)
+            toast.error(error.response?.data?.message || "Error deleting video");
+        }
     }
 
     return (
@@ -275,10 +301,14 @@ export default function YourChannel() {
                                                                     alignItems: 'center',
                                                                     textAlign: 'left'
                                                                 }}
+                                                                onClick={() => handleEditBtnClick()}
                                                             >
                                                                 <FiEdit style={{ marginRight: '8px' }} size={18} /> Edit
                                                             </MenuItem>
-                                                            <MenuItem style={{ color: 'red', display: 'flex', alignItems: 'center', textAlign: 'left' }}>
+                                                            <MenuItem
+                                                                style={{ color: 'red', display: 'flex', alignItems: 'center', textAlign: 'left' }}
+                                                                onClick={() => handleVideoDeleteBtnClick()}
+                                                            >
                                                                 <RiDeleteBinLine style={{ marginRight: '8px' }} size={18} /> Delete
                                                             </MenuItem>
                                                         </Menu>

@@ -198,6 +198,20 @@ export const getLikedTweetsOfChannel = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, likesByMe, "Tweets found successfully"))
 })
 
+export const getCommentLikes = asyncHandler(async (req, res) => {
+  const { commentId } = req.params;
+
+  if (!mongoose.isValidObjectId(commentId)) {
+    throw new ApiError(400, "Invalid comment id");
+  }
+
+  const likes = await Like.countDocuments({ comment: commentId });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, likes, "Likes found successfully"));
+});
+
 export {
     toggleCommentLike,
     toggleTweetLike,

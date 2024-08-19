@@ -271,3 +271,13 @@
 .suggestedTitlePara, .suggestedVideoOwner, .suggestedViews, .suggestedTime {
     padding: 0;
 }
+
+.cardDiv {
+    margin-bottom: 0.6rem;
+}
+
+.likesDiv{
+    height: 30px;
+    display: flex;
+    align-items: center;
+}

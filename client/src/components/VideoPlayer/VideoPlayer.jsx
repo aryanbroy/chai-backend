@@ -421,6 +421,7 @@ export default function VideoPlayer() {
                       <p className={styles.suggestedVideoOwner}>{video?.owner?.username}</p>
                       <div className={styles.suggestedViewsTime}>
                         <p className={styles.suggestedViews}>{video?.views} views</p>
+                        <span style={{ color: '#AAAAAA' }}>•</span>
                         <p className={styles.suggestedTime}>{video?.uploadedTimeAgo}</p>
                       </div>
                     </div>

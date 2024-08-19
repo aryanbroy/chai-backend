@@ -267,3 +267,7 @@
     font-weight: 700;
     font-size: 16px;
 }
+
+.suggestedTitlePara, .suggestedVideoOwner, .suggestedViews, .suggestedTime {
+    padding: 0;
+}

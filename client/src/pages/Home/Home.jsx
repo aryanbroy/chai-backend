@@ -24,28 +24,28 @@ export default function Home() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await axios.get("/api/videos/?page=1&limit=20")
-                if (res.data.statusCode >= 400 || res.data.success === false) {
-                    console.log(res.data.message);
-                    return;
-                }
-                const { data } = res.data;
-                data.docs.map((video) => {
-                    const date = new Date(video.createdAt);
-                    const formattedDate = useFormatDate(date);
-                    video.uploadedTimeAgo = formattedDate;
-                })
-                setPosts(data.docs);
-                setIsPostsFetched(true);
-            } catch (error) {
-                console.log(error)
-                setIsPostsFetched(true);
-            }
+      const fetchData = async () => {
+        try {
+          const res = await axios.get("/api/videos/?page=1&limit=20");
+          if (res.data.statusCode >= 400 || res.data.success === false) {
+            console.log(res.data.message);
+            return;
+          }
+          const { data } = res.data;
+          data.docs.map((video) => {
+            const date = new Date(video.createdAt);
+            const formattedDate = useFormatDate(date);
+            video.uploadedTimeAgo = formattedDate;
+          });
+          setPosts(data.docs);
+          setIsPostsFetched(true);
+        } catch (error) {
+          console.log(error);
+          setIsPostsFetched(true);
         }
-        fetchData();
-    }, [])
+      };
+      fetchData();
+    }, []);
 
     const fetchPost = async (page) => {
         // console.log(page)
